@@ -95,8 +95,6 @@ class Impact {
     return true;
   } //checkToken
 
-/*
-
   //This method prepares the Bearer header for the calls
   Future<Map<String, String>> getBearer() async {
     if (!await checkSavedToken()) {
@@ -107,6 +105,8 @@ class Impact {
 
     return {'Authorization': 'Bearer $token'};
   }
+
+/*
 
   Future<void> getPatient() async {
     var header = await getBearer();
