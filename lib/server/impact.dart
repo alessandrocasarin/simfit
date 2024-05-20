@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:simfit/models/exercise.dart';
 
 class Impact {
   static String baseUrl = 'https://impact.dei.unipd.it/bwthw/';
@@ -104,6 +106,54 @@ class Impact {
     final token = sp.getString('access');
 
     return {'Authorization': 'Bearer $token'};
+  }
+
+  Future<void> getPatient() async {
+    var header = await getBearer();
+    final r = await http.get(
+        Uri.parse('${Impact.baseUrl}study/v1/patients/active'),
+        headers: header);
+
+    final decodedResponse = jsonDecode(r.body);
+    final sp = await SharedPreferences.getInstance();
+
+    sp.setString('impactPatient', decodedResponse['data'][0]['username']);
+  }
+
+  Future<List<Exercise>> getActivitiesFromDay(DateTime day) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    var formattedDay = DateFormat('y-M-d').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/exercise/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return [];
+
+    List<dynamic> data = jsonDecode(r.body)['data'];
+    List<Exercise> exercises = [];
+    for (var daydata in data) {
+      for (var dataday in daydata['data']) {
+        Exercise ex = Exercise(
+            activityName: dataday['activityName'],
+            avgHR: dataday['averageHeartRate'] ?? 0,
+            calories: dataday['calories'] ?? 0,
+            distance: dataday['distance'] ?? 0.0,
+            duration: dataday['duration'] ?? 0.0,
+            activeDuration: dataday['activeDuration'] ?? 0.0,
+            zonesHR: List<HRZone>.from(dataday['heartRateZones'].map((zone) => HRZone.fromJson(zone))),
+            avgSpeed: dataday['speed'] ?? 0.0,
+            elevationGain: dataday['elevationGain'] ?? 0.0,
+            startingTime: DateFormat('y-M-d').parse(dataday['time']),
+            steps: dataday['steps'] ?? 0,
+            vo2Max: dataday['vo2Max']['vo2Max'] ?? 0.0,
+          );
+        exercises.add(ex);
+      }
+    }
+    return exercises;
   }
 
 /*
