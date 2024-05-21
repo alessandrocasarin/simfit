@@ -1,4 +1,4 @@
-class Exercise {
+class Activity {
   final String activityName;
   final int avgHR;
   final int calories;
@@ -12,7 +12,7 @@ class Exercise {
   final double elevationGain;
   final DateTime startingTime;
 
-  Exercise({
+  Activity({
     required this.activityName,
     required this.avgHR,
     required this.calories,
