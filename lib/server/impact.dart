@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:simfit/models/exercise.dart';
+import 'package:simfit/models/activity.dart';
 
 class Impact {
   static String baseUrl = 'https://impact.dei.unipd.it/bwthw/';
@@ -120,11 +120,11 @@ class Impact {
     sp.setString('impactPatient', decodedResponse['data'][0]['username']);
   }
 
-  Future<List<Exercise>> getActivitiesFromDay(DateTime day) async {
+  Future<List<Activity>> getActivitiesFromDay(DateTime day) async {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    var formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('y-M-d').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/exercise/patients/$patient/day/$formattedDay/'),
@@ -133,10 +133,10 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     List<dynamic> data = jsonDecode(r.body)['data'];
-    List<Exercise> exercises = [];
+    List<Activity> activities = [];
     for (var daydata in data) {
-      for (var dataday in daydata['data']) {
-        Exercise ex = Exercise(
+      for (var dataday in daydata[0]['data']) {
+        Activity act = Activity(
             activityName: dataday['activityName'],
             avgHR: dataday['averageHeartRate'] ?? 0,
             calories: dataday['calories'] ?? 0,
@@ -150,10 +150,49 @@ class Impact {
             steps: dataday['steps'] ?? 0,
             vo2Max: dataday['vo2Max']['vo2Max'] ?? 0.0,
           );
-        exercises.add(ex);
+        activities.add(act);
       }
     }
-    return exercises;
+    return activities;
+  }
+
+  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedStart = DateFormat('y-M-d').format(start);
+    String formattedEnd = DateFormat('y-M-d').format(end);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/exercise/patients/$patient/daterange/start_date/$formattedStart/end_date/$formattedEnd/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return <DateTime, List<Activity>>{};
+
+    List<dynamic> data = jsonDecode(r.body)['data'];
+    Map<DateTime, List<Activity>> weekActivities = {};
+    for (var daydata in data) {
+      List<Activity> dayActivities = [];
+      for (var dataday in daydata['data']) {
+        Activity act = Activity(
+            activityName: dataday['activityName'],
+            avgHR: dataday['averageHeartRate'] ?? 0,
+            calories: dataday['calories'] ?? 0,
+            distance: dataday['distance'] ?? 0.0,
+            duration: dataday['duration'] ?? 0.0,
+            activeDuration: dataday['activeDuration'] ?? 0.0,
+            zonesHR: List<HRZone>.from(dataday['heartRateZones'].map((zone) => HRZone.fromJson(zone))),
+            avgSpeed: dataday['speed'] ?? 0.0,
+            elevationGain: dataday['elevationGain'] ?? 0.0,
+            startingTime: DateFormat('y-M-d').parse(dataday['time']),
+            steps: dataday['steps'] ?? 0,
+            vo2Max: dataday['vo2Max']['vo2Max'] ?? 0.0,
+          );
+        dayActivities.add(act);
+      }
+      weekActivities.update(DateFormat('y-M-d').parse(daydata['date']), (value) => dayActivities);
+    }
+    return weekActivities;
   }
 
 /*
