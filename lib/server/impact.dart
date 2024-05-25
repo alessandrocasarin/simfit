@@ -4,6 +4,10 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:simfit/models/activity.dart';
+import 'package:simfit/models/calories.dart';
+import 'package:simfit/models/heart_rate.dart';
+import 'package:simfit/models/sleep.dart';
+import 'package:simfit/models/steps.dart';
 
 class Impact {
   static String baseUrl = 'https://impact.dei.unipd.it/bwthw/';
@@ -132,31 +136,18 @@ class Impact {
     );
     if (r.statusCode != 200) return [];
 
-    List<dynamic> data = jsonDecode(r.body)['data'];
+    dynamic data = jsonDecode(r.body)["data"];
     List<Activity> activities = [];
-    for (var daydata in data) {
-      for (var dataday in daydata[0]['data']) {
-        Activity act = Activity(
-            activityName: dataday['activityName'],
-            avgHR: dataday['averageHeartRate'] ?? 0,
-            calories: dataday['calories'] ?? 0,
-            distance: dataday['distance'] ?? 0.0,
-            duration: dataday['duration'] ?? 0.0,
-            activeDuration: dataday['activeDuration'] ?? 0.0,
-            zonesHR: List<HRZone>.from(dataday['heartRateZones'].map((zone) => HRZone.fromJson(zone))),
-            avgSpeed: dataday['speed'] ?? 0.0,
-            elevationGain: dataday['elevationGain'] ?? 0.0,
-            startingTime: DateFormat('y-M-d').parse(dataday['time']),
-            steps: dataday['steps'] ?? 0,
-            vo2Max: dataday['vo2Max']['vo2Max'] ?? 0.0,
-          );
-        activities.add(act);
-      }
+    String day = data["date"];
+    for (var currentActivity in data["data"]) {
+      activities.add(Activity.fromJson(day, currentActivity));
     }
+
     return activities;
   }
 
-  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
+  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(
+      DateTime start, DateTime end) async {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
@@ -169,45 +160,114 @@ class Impact {
     );
     if (r.statusCode != 200) return <DateTime, List<Activity>>{};
 
-    List<dynamic> data = jsonDecode(r.body)['data'];
+    List<dynamic> data = jsonDecode(r.body)["data"];
     Map<DateTime, List<Activity>> weekActivities = {};
     for (var daydata in data) {
       List<Activity> dayActivities = [];
-      for (var dataday in daydata['data']) {
-        Activity act = Activity(
-            activityName: dataday['activityName'],
-            avgHR: dataday['averageHeartRate'] ?? 0,
-            calories: dataday['calories'] ?? 0,
-            distance: dataday['distance'] ?? 0.0,
-            duration: dataday['duration'] ?? 0.0,
-            activeDuration: dataday['activeDuration'] ?? 0.0,
-            zonesHR: List<HRZone>.from(dataday['heartRateZones'].map((zone) => HRZone.fromJson(zone))),
-            avgSpeed: dataday['speed'] ?? 0.0,
-            elevationGain: dataday['elevationGain'] ?? 0.0,
-            startingTime: DateFormat('y-M-d').parse(dataday['time']),
-            steps: dataday['steps'] ?? 0,
-            vo2Max: dataday['vo2Max']['vo2Max'] ?? 0.0,
-          );
-        dayActivities.add(act);
+      String day = daydata["date"];
+      for (var currentActivity in daydata["data"]) {
+        dayActivities.add(Activity.fromJson(day, currentActivity));
       }
-      weekActivities.update(DateFormat('y-M-d').parse(daydata['date']), (value) => dayActivities);
+      weekActivities.update(
+          DateFormat('yyyy-MM-dd').parse(day), (value) => dayActivities);
     }
     return weekActivities;
   }
 
-/*
-
-  Future<void> getPatient() async {
-    var header = await getBearer();
-    final r = await http.get(
-        Uri.parse('${Impact.baseUrl}study/v1/patients/active'),
-        headers: header);
-
-    final decodedResponse = jsonDecode(r.body);
+  Future<List<HR>> getHRFromDay(DateTime day) async {
     final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedDay = DateFormat('y-M-d').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/heart_rate/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return [];
 
-    sp.setString('impactPatient', decodedResponse['data'][0]['username']);
+    dynamic data = jsonDecode(r.body)["data"];
+    List<HR> hr = [];
+    String day = data["date"];
+    for (var currentHR in data["data"]) {
+      hr.add(HR.fromJson(day, currentHR));
+    }
+
+    var hrlist = hr.toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    return hrlist;
   }
+
+  Future<List<Calories>> getCaloriesFromDay(DateTime day) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedDay = DateFormat('y-M-d').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/calories/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return [];
+
+    dynamic data = jsonDecode(r.body)["data"];
+    List<Calories> calories = [];
+    String day = data["date"];
+    for (var currentCals in data["data"]) {
+      calories.add(Calories.fromJson(day, currentCals));
+    }
+
+    var calorieslist = calories.toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    return calorieslist;
+  }
+
+  Future<List<Steps>> getStepsFromDay(DateTime day) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedDay = DateFormat('y-M-d').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/steps/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return [];
+
+    dynamic data = jsonDecode(r.body)["data"];
+    List<Steps> steps = [];
+    String day = data["date"];
+    for (var currentSteps in data["data"]) {
+      steps.add(Steps.fromJson(day, currentSteps));
+    }
+
+    var stepslist = steps.toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    return stepslist;
+  }
+
+  Future<List<Sleep>> getMainSleepFromDay(DateTime day) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedDay = DateFormat('y-M-d').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return [];
+
+    dynamic data = jsonDecode(r.body)["data"];
+    List<Sleep> sleeps = [];
+    String day = data["date"];
+    for (var currentSleep in data["data"]) {
+      sleeps.add(Sleep.fromJson(day, currentSleep));
+    }
+    return sleeps;
+  }
+
+/*
 
   Future<List<HR>> getDataFromDay(DateTime startTime) async {
     final sp = await SharedPreferences.getInstance();

@@ -1,10 +1,11 @@
+import 'package:intl/intl.dart';
+
 class Activity {
   final String activityName;
   final int avgHR;
   final int calories;
   final double distance;
-  final double duration;
-  final double activeDuration;
+  final Duration duration;
   final int steps;
   final List<HRZone> zonesHR;
   final double avgSpeed;
@@ -18,7 +19,6 @@ class Activity {
     required this.calories,
     required this.distance,
     required this.duration,
-    required this.activeDuration,
     required this.steps,
     required this.zonesHR,
     required this.avgSpeed,
@@ -26,6 +26,20 @@ class Activity {
     required this.elevationGain,
     required this.startingTime,
   });
+
+  Activity.fromJson(String date, Map<String, dynamic> json) :
+      activityName = json["activityName"] ?? '',
+      avgHR = json["averageHeartRate"] ?? 0,
+      calories = json["calories"] ?? 0,
+      distance = json["distance"] ?? 0.0,
+      duration = Duration(milliseconds: json['duration'] ?? 0),
+      steps = json["steps"] ?? 0,
+      zonesHR = List<HRZone>.from(json["heartRateZones"].map((zone) => HRZone.fromJson(zone))),
+      avgSpeed = json["speed"] ?? 0.0,
+      vo2Max = json["vo2Max"]["vo2Max"] ?? 0.0,
+      elevationGain = json["elevationGain"] ?? 0.0,
+      startingTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}');
+     
 }
 
 class HRZone {
@@ -43,13 +57,11 @@ class HRZone {
     required this.caloriesOut,
   });
 
-  factory HRZone.fromJson(Map<String, dynamic> json) {
-    return HRZone(
-      name: json['name'] is List ? json['name'] : json['name'] ?? '',
-      min: json['min'] ?? 0,
-      max: json['max'] ?? 0,
-      minutes: json['minutes'] ?? 0,
-      caloriesOut: json['caloriesOut'] ?? 0.0,
-    );
-  }
+  HRZone.fromJson(Map<String, dynamic> json) :
+      name = json["name"] ?? '',
+      min = json["min"] ?? 0,
+      max = json["max"] ?? 0,
+      minutes = json["minutes"] ?? 0,
+      caloriesOut = json["caloriesOut"] ?? 0.0;
+
 }
