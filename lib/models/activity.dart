@@ -44,23 +44,23 @@ class Activity {
 
 class HRZone {
   final String name;
-  final int min;
-  final int max;
+  final int minHR;
+  final int maxHR;
   final int minutes;
   final double caloriesOut;
 
   HRZone({
     required this.name,
-    required this.min,
-    required this.max,
+    required this.minHR,
+    required this.maxHR,
     required this.minutes,
     required this.caloriesOut,
   });
 
   HRZone.fromJson(Map<String, dynamic> json) :
       name = json["name"] ?? '',
-      min = json["min"] ?? 0,
-      max = json["max"] ?? 0,
+      minHR = json["min"] ?? 0,
+      maxHR = json["max"] ?? 0,
       minutes = json["minutes"] ?? 0,
       caloriesOut = json["caloriesOut"] ?? 0.0;
 

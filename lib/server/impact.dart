@@ -128,7 +128,7 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/exercise/patients/$patient/day/$formattedDay/'),
@@ -149,8 +149,8 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedStart = DateFormat('y-M-d').format(start);
-    String formattedEnd = DateFormat('y-M-d').format(end);
+    String formattedStart = DateFormat('yyyy-MM-dd').format(start);
+    String formattedEnd = DateFormat('yyyy-MM-dd').format(end);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/exercise/patients/$patient/daterange/start_date/$formattedStart/end_date/$formattedEnd/'),
@@ -176,7 +176,7 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/heart_rate/patients/$patient/day/$formattedDay/'),
@@ -199,7 +199,7 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/calories/patients/$patient/day/$formattedDay/'),
@@ -245,7 +245,7 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('yyyy-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
