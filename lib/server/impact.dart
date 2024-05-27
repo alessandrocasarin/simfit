@@ -138,16 +138,14 @@ class Impact {
 
     dynamic data = jsonDecode(r.body)["data"];
     List<Activity> activities = [];
-    String day = data["date"];
     for (var currentActivity in data["data"]) {
-      activities.add(Activity.fromJson(day, currentActivity));
+      activities.add(Activity.fromJson(data["date"], currentActivity));
     }
 
     return activities;
   }
 
-  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(
-      DateTime start, DateTime end) async {
+  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
@@ -168,9 +166,9 @@ class Impact {
       for (var currentActivity in daydata["data"]) {
         dayActivities.add(Activity.fromJson(day, currentActivity));
       }
-      weekActivities.update(
-          DateFormat('yyyy-MM-dd').parse(day), (value) => dayActivities);
+      weekActivities.update(DateFormat('yyyy-MM-dd').parse(day), (value) => dayActivities);
     }
+    
     return weekActivities;
   }
 
@@ -188,9 +186,8 @@ class Impact {
 
     dynamic data = jsonDecode(r.body)["data"];
     List<HR> hr = [];
-    String day = data["date"];
     for (var currentHR in data["data"]) {
-      hr.add(HR.fromJson(day, currentHR));
+      hr.add(HR.fromJson(data["date"], currentHR));
     }
 
     var hrlist = hr.toList()
@@ -212,9 +209,8 @@ class Impact {
 
     dynamic data = jsonDecode(r.body)["data"];
     List<Calories> calories = [];
-    String day = data["date"];
     for (var currentCals in data["data"]) {
-      calories.add(Calories.fromJson(day, currentCals));
+      calories.add(Calories.fromJson(data["date"], currentCals));
     }
 
     var calorieslist = calories.toList()
@@ -226,7 +222,7 @@ class Impact {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/steps/patients/$patient/day/$formattedDay/'),
@@ -236,9 +232,8 @@ class Impact {
 
     dynamic data = jsonDecode(r.body)["data"];
     List<Steps> steps = [];
-    String day = data["date"];
     for (var currentSteps in data["data"]) {
-      steps.add(Steps.fromJson(day, currentSteps));
+      steps.add(Steps.fromJson(data["date"], currentSteps));
     }
 
     var stepslist = steps.toList()
@@ -246,11 +241,11 @@ class Impact {
     return stepslist;
   }
 
-  Future<List<Sleep>> getMainSleepFromDay(DateTime day) async {
+  Future<List<Sleep>> getSleepsFromDay(DateTime day) async {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
     var header = await getBearer();
-    String formattedDay = DateFormat('y-M-d').format(day);
+    String formattedDay = DateFormat('yyyy-M-d').format(day);
     var r = await http.get(
       Uri.parse(
           '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
@@ -260,9 +255,8 @@ class Impact {
 
     dynamic data = jsonDecode(r.body)["data"];
     List<Sleep> sleeps = [];
-    String day = data["date"];
     for (var currentSleep in data["data"]) {
-      sleeps.add(Sleep.fromJson(day, currentSleep));
+      sleeps.add(Sleep.fromJson(data["date"], currentSleep));
     }
     return sleeps;
   }
