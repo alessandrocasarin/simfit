@@ -68,5 +68,49 @@ class Algorithmms {
     return scores;
   }
 
+  Map<DateTime, Map<String, double>> computeScoresOfMesocycle(DateTime day, Map<DateTime, List<Activity>> activityList, Map<DateTime, double> restHRList) {
+    Map<DateTime, Map<String, double>> scores = {};
+    
+    for (var i = 0; i < mesocycleLength; i++) {
+      DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
+      scores[currentDay] ??= {};
+      scores[currentDay]?['TRIMP'] = _computeTRIMPOfDay(activityList[currentDay] ?? [], restHRList[currentDay] ?? 0.0);
+    }
+
+    for (var i = 0; i < mesocycleLength; i++) {
+      DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
+      // computing Acute Training Load (ACL) from TRIMP values over last week
+      double num = 0.0;
+      double den = 0.0;
+      for (var j = 0; j < 7; j++) {
+        DateTime tempDay = currentDay.subtract(Duration(days:j));
+        num += (scores[tempDay]?['TRIMP'] ?? 0.0) * pow(e, -j/7);
+        den += pow(e, -j/7);
+      }
+      double acl = num/den;
+      scores[currentDay]?['ACL'] = acl;
+    }
+
+    for (var i = 0; i < mesocycleLength; i++) {
+      DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
+      // computing Chronic Training Load (CTL) from TRIMP values over mesocycle
+      double num = 0.0;
+      double den = 0.0;
+      for (var j = 0; j < mesocycleLength; j++) {
+        DateTime tempDay = currentDay.subtract(Duration(days:j));
+        num += (scores[tempDay]?['TRIMP'] ?? 0.0)*pow(e, -j/mesocycleLength);
+        den += pow(e, -j/mesocycleLength);
+      }
+      double ctl = num/den;
+      scores[currentDay]?['CTL'] = ctl;
+    }
+
+    for (var i = 0; i < mesocycleLength; i++) {
+      DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
+      scores[currentDay]?['TSB'] = (scores[currentDay]?['CTL'] ?? 0.0) - (scores[currentDay]?['ACL'] ?? 0.0);
+    }
+
+    return scores;
+  }
 
 }
