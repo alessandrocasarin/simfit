@@ -8,7 +8,7 @@ class Calories {
 
   Calories.fromJson(String date, Map<String, dynamic> json) :
       timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}'),
-      value = json["value"] ?? 0.0;
+      value = (json["value"] ?? 0).toDouble();
 }
 
 double getTotalCaloriesFromDay(List<Calories> dataCals) {

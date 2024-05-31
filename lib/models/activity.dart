@@ -31,13 +31,13 @@ class Activity {
       activityName = json["activityName"] ?? '',
       avgHR = json["averageHeartRate"] ?? 0,
       calories = json["calories"] ?? 0,
-      distance = json["distance"] ?? 0.0,
+      distance = (json["distance"] ?? 0).toDouble(),
       duration = Duration(milliseconds: json['duration'] ?? 0),
       steps = json["steps"] ?? 0,
       zonesHR = List<HRZone>.from(json["heartRateZones"].map((zone) => HRZone.fromJson(zone))),
       avgSpeed = json["speed"] ?? 0.0,
-      vo2Max = json["vo2Max"]["vo2Max"] ?? 0.0,
-      elevationGain = json["elevationGain"] ?? 0.0,
+      vo2Max = json["vo2Max"]?["vo2Max"]?.toDouble() ?? 0.0,
+      elevationGain = (json["elevationGain"] ?? 0).toDouble(),
       startingTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}');
      
 }
@@ -62,6 +62,6 @@ class HRZone {
       minHR = json["min"] ?? 0,
       maxHR = json["max"] ?? 0,
       minutes = json["minutes"] ?? 0,
-      caloriesOut = json["caloriesOut"] ?? 0.0;
+      caloriesOut = (json["caloriesOut"] ?? 0).toDouble();
 
 }

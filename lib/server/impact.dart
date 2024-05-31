@@ -15,6 +15,8 @@ class Impact {
   static String tokenEndpoint = 'gate/v1/token/';
   static String refreshEndpoint = 'gate/v1/refresh/';
 
+  static String patientUsername = 'Jpefaq6m58';
+
   //This method allows to check if the IMPACT backend is up
   Future<bool> isImpactUp() async {
     //Create the request
@@ -131,7 +133,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/exercise/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/exercise/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return [];
@@ -156,7 +158,7 @@ class Impact {
       var header = await getBearer();
       var r = await http.get(
         Uri.parse(
-            '${Impact.baseUrl}/data/v1/exercise/patients/$patient/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
+            '${Impact.baseUrl}/data/v1/exercise/patients/$patientUsername/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
         headers: header,
       );
       if (r.statusCode == 200) {
@@ -165,6 +167,7 @@ class Impact {
           List<Activity> dayActivities = [];
           String day = daydata["date"];
           for (var currentActivity in daydata["data"]) {
+            Activity dayActivity = Activity.fromJson(day, currentActivity);
             dayActivities.add(Activity.fromJson(day, currentActivity));
           }
           activities[DateFormat('yyyy-MM-dd').parse(day)] =  dayActivities;
@@ -181,7 +184,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/heart_rate/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/heart_rate/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return [];
@@ -204,7 +207,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/calories/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/calories/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return [];
@@ -227,7 +230,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/steps/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/steps/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return [];
@@ -250,7 +253,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/sleep/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return [];
@@ -270,7 +273,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/sleep/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return 0.0;
@@ -286,11 +289,12 @@ class Impact {
     Map<DateTime, double> restHRs = {};
 
     List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
-    for (var element in formattedStartEnd) {
+
+    for (Map<String, String> element in formattedStartEnd) {
       var header = await getBearer();
       var r = await http.get(
         Uri.parse(
-            '${Impact.baseUrl}/data/v1/resting_heart_rate/patients/$patient/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
+            '${Impact.baseUrl}/data/v1/resting_heart_rate/patients/$patientUsername/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
         headers: header,
       );
       if (r.statusCode == 200) {
@@ -316,7 +320,7 @@ class Impact {
     // complete weeks
     for (int weeksToSubtract = 0; weeksToSubtract < completeWeeks; weeksToSubtract++) {
       String formattedStart = DateFormat('yyyy-MM-dd').format(end.subtract(Duration(days: (weeksToSubtract+1)*7)));
-      String formattedEnd = DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: weeksToSubtract*7)));
+      String formattedEnd = DateFormat('yyyy-MM-dd').format(end.subtract(Duration(days: weeksToSubtract*7)));
       weeks.add(
         {
           'start': formattedStart,
@@ -329,8 +333,8 @@ class Impact {
     if (remainingDays > 0) {
       weeks.add(
         {
-          'start': DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: (completeWeeks*7)+remainingDays))),
-          'end': DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: completeWeeks*7))),
+          'start': DateFormat('yyyy-MM-dd').format(start),
+          'end': DateFormat('yyyy-MM-dd').format(start.add(Duration(days: remainingDays))),
         }
       );
     }

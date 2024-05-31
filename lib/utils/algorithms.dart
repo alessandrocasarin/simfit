@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:simfit/models/activity.dart';
 
 class Algorithmms {
@@ -14,7 +15,7 @@ class Algorithmms {
     mesocycleLength = mesocycle;
   }
 
-  double _computeTRIMPOfDay(DateTime day, List<Activity> activities, double restHR) {
+  double _computeTRIMPOfDay(List<Activity> activities, double restHR) {
     if (activities.isEmpty) return 0.0;
     
     double trimpTot = 0.0;
@@ -33,8 +34,8 @@ class Algorithmms {
 
     Map<DateTime, double> mesocycleTRIMPs = {};
     for (var i = 0; i < mesocycleLength; i++) {
-      DateTime currentDay = day.subtract(Duration(days:i));
-      mesocycleTRIMPs[currentDay] = _computeTRIMPOfDay(currentDay, activityList[currentDay] ?? [], restHRList[currentDay] ?? 0.0);
+      DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
+      mesocycleTRIMPs[currentDay] = _computeTRIMPOfDay(activityList[currentDay] ?? [], restHRList[currentDay] ?? 0.0);
     }
     scores['TRIMP'] = mesocycleTRIMPs[day] ?? 0.0;
 
