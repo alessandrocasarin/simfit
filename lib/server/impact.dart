@@ -148,28 +148,30 @@ class Impact {
   Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
     final sp = await SharedPreferences.getInstance();
     String? patient = sp.getString('impactPatient');
-    var header = await getBearer();
-    String formattedStart = DateFormat('yyyy-MM-dd').format(start);
-    String formattedEnd = DateFormat('yyyy-MM-dd').format(end);
-    var r = await http.get(
-      Uri.parse(
-          '${Impact.baseUrl}/data/v1/exercise/patients/$patient/daterange/start_date/$formattedStart/end_date/$formattedEnd/'),
-      headers: header,
-    );
-    if (r.statusCode != 200) return <DateTime, List<Activity>>{};
 
-    List<dynamic> data = jsonDecode(r.body)["data"];
-    Map<DateTime, List<Activity>> weekActivities = {};
-    for (var daydata in data) {
-      List<Activity> dayActivities = [];
-      String day = daydata["date"];
-      for (var currentActivity in daydata["data"]) {
-        dayActivities.add(Activity.fromJson(day, currentActivity));
+    Map<DateTime, List<Activity>> activities = {};
+
+    List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
+    for (var element in formattedStartEnd) {
+      var header = await getBearer();
+      var r = await http.get(
+        Uri.parse(
+            '${Impact.baseUrl}/data/v1/exercise/patients/$patient/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
+        headers: header,
+      );
+      if (r.statusCode == 200) {
+        List<dynamic> data = jsonDecode(r.body)["data"];
+        for (var daydata in data) {
+          List<Activity> dayActivities = [];
+          String day = daydata["date"];
+          for (var currentActivity in daydata["data"]) {
+            dayActivities.add(Activity.fromJson(day, currentActivity));
+          }
+          activities[DateFormat('yyyy-MM-dd').parse(day)] =  dayActivities;
+        }
       }
-      weekActivities.update(DateFormat('yyyy-MM-dd').parse(day), (value) => dayActivities);
     }
-    
-    return weekActivities;
+    return activities;
   }
 
   Future<List<HR>> getHRFromDay(DateTime day) async {
@@ -259,6 +261,81 @@ class Impact {
       sleeps.add(Sleep.fromJson(data["date"], currentSleep));
     }
     return sleeps;
+  }
+
+  Future<double> getRestHRFromDay(DateTime day) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+    var header = await getBearer();
+    String formattedDay = DateFormat('yyyy-MM-dd').format(day);
+    var r = await http.get(
+      Uri.parse(
+          '${Impact.baseUrl}/data/v1/sleep/patients/$patient/day/$formattedDay/'),
+      headers: header,
+    );
+    if (r.statusCode != 200) return 0.0;
+
+    dynamic data = jsonDecode(r.body)["data"];
+    return data["data"]["value"] ?? 0.0;
+  }
+
+  Future<Map<DateTime, double>> getRestHRsFromDateRange(DateTime start, DateTime end) async {
+    final sp = await SharedPreferences.getInstance();
+    String? patient = sp.getString('impactPatient');
+
+    Map<DateTime, double> restHRs = {};
+
+    List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
+    for (var element in formattedStartEnd) {
+      var header = await getBearer();
+      var r = await http.get(
+        Uri.parse(
+            '${Impact.baseUrl}/data/v1/resting_heart_rate/patients/$patient/daterange/start_date/${element['start']}/end_date/${element['end']}/'),
+        headers: header,
+      );
+      if (r.statusCode == 200) {
+        List<dynamic> data = jsonDecode(r.body)["data"];
+        for (var daydata in data) {
+          String day = daydata["date"];
+          double dayRestHR = daydata["data"]["value"];
+          restHRs[DateFormat('yyyy-MM-dd').parse(day)] =  dayRestHR;
+        }
+      }
+    }
+
+    return restHRs;
+  }
+
+  List<Map<String, String>> _formatFromRangeToWeeks(DateTime start, DateTime end) {
+    List<Map<String, String>> weeks = [];
+
+    int daysRange = end.difference(start).inDays;
+    int completeWeeks = daysRange ~/ 7;
+    int remainingDays = daysRange % 7;
+
+    // complete weeks
+    for (int weeksToSubtract = 0; weeksToSubtract < completeWeeks; weeksToSubtract++) {
+      String formattedStart = DateFormat('yyyy-MM-dd').format(end.subtract(Duration(days: (weeksToSubtract+1)*7)));
+      String formattedEnd = DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: weeksToSubtract*7)));
+      weeks.add(
+        {
+          'start': formattedStart,
+          'end': formattedEnd,
+        }
+      );
+    }
+
+    // remaining days
+    if (remainingDays > 0) {
+      weeks.add(
+        {
+          'start': DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: (completeWeeks*7)+remainingDays))),
+          'end': DateFormat('yyyy-MM-dd').format(start.subtract(Duration(days: completeWeeks*7))),
+        }
+      );
+    }
+
+    return weeks;
   }
 
 } //Impact
