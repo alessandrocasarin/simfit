@@ -114,21 +114,7 @@ class Impact {
     return {'Authorization': 'Bearer $token'};
   }
 
-  Future<void> getPatient() async {
-    var header = await getBearer();
-    final r = await http.get(
-        Uri.parse('${Impact.baseUrl}study/v1/patients/active'),
-        headers: header);
-
-    final decodedResponse = jsonDecode(r.body);
-    final sp = await SharedPreferences.getInstance();
-
-    sp.setString('impactPatient', decodedResponse['data'][0]['username']);
-  }
-
   Future<List<Activity>> getActivitiesFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -148,9 +134,6 @@ class Impact {
   }
 
   Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
-
     Map<DateTime, List<Activity>> activities = {};
 
     List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
@@ -167,7 +150,6 @@ class Impact {
           List<Activity> dayActivities = [];
           String day = daydata["date"];
           for (var currentActivity in daydata["data"]) {
-            Activity dayActivity = Activity.fromJson(day, currentActivity);
             dayActivities.add(Activity.fromJson(day, currentActivity));
           }
           activities[DateFormat('yyyy-MM-dd').parse(day)] =  dayActivities;
@@ -178,8 +160,6 @@ class Impact {
   }
 
   Future<List<HR>> getHRFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -201,8 +181,6 @@ class Impact {
   }
 
   Future<List<Calories>> getCaloriesFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -224,8 +202,6 @@ class Impact {
   }
 
   Future<List<Steps>> getStepsFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -247,8 +223,6 @@ class Impact {
   }
 
   Future<List<Sleep>> getSleepsFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -267,8 +241,6 @@ class Impact {
   }
 
   Future<double> getRestHRFromDay(DateTime day) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
     var header = await getBearer();
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
@@ -283,9 +255,6 @@ class Impact {
   }
 
   Future<Map<DateTime, double>> getRestHRsFromDateRange(DateTime start, DateTime end) async {
-    final sp = await SharedPreferences.getInstance();
-    String? patient = sp.getString('impactPatient');
-
     Map<DateTime, double> restHRs = {};
 
     List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
