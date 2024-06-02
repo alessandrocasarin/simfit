@@ -7,7 +7,7 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Info Page'),
+        title: Text('Settings Page'),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_sharp),

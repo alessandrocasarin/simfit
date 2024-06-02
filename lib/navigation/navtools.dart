@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simfit/screens/login.dart';
 import 'package:simfit/screens/profile.dart';
 import 'package:profile_photo/profile_photo.dart';
+import 'package:simfit/screens/info.dart';
+import 'package:simfit/screens/settings.dart';
 
 class NavDrawer extends StatelessWidget {
   NavDrawer({Key? key}) : super(key: key);
