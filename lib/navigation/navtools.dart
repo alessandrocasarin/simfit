@@ -9,9 +9,11 @@ import 'package:simfit/screens/settings.dart';
 
 class NavDrawer extends StatelessWidget {
   NavDrawer({Key? key}) : super(key: key);
-
+  final sp =  SharedPreferences.getInstance();
+  
   @override
   Widget build(BuildContext context) {
+    
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -23,8 +25,7 @@ class NavDrawer extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children:[
-                Text(
-                  'Hello User!',
+                Text('Hi!',
                   style: TextStyle(
                     fontWeight:FontWeight.bold,
                     fontSize: 15,
