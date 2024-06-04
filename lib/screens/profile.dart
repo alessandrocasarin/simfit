@@ -18,6 +18,7 @@ class _ProfileState extends State<Profile> {
 
   DateTime selectedDate = DateTime.now();
   int? bs;
+  int? age_state;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _ProfileState extends State<Profile> {
       initialDate: selectedDate,
       firstDate: DateTime(1970, 1),
       lastDate: DateTime(2024, 12));
+
     if (picked != null && picked != selectedDate) {
       String picked_date = DateFormat('yyyy-MM-dd').format(picked);
       dateController.text = picked_date;
@@ -56,12 +58,35 @@ class _ProfileState extends State<Profile> {
     String dob = sp.getString('dob') ?? "";
     String ms_start = sp.getString('ms_start') ?? "";
     String name = sp.getString('name') ?? "";
+    int age=sp.getInt('age')?? 0;
+    
     setState(() {
       bs = int.tryParse(bioS);
       dateController.text = dob;
       datemsController.text = ms_start;
       nameController.text = name;
+      age_state = age;
     });
+  }
+
+   int age_calc(DateTime today, DateTime dob) {
+    final year = today.year - dob.year;
+    final mth = today.month - dob.month;
+    final days = today.day - dob.day;
+    if(mth < 0){ /// negative month means it's still upcoming
+      return year-1;
+    }
+    if(mth==0) {
+      if(days<0){
+        return year-1;
+      }
+      else{
+        return year;
+      }   
+    }
+    else{
+      return year;
+    }
   }
 
   @override
@@ -89,6 +114,13 @@ class _ProfileState extends State<Profile> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final sp = await SharedPreferences.getInstance();
+                       
+                          DateTime dob=DateTime.parse(dateController.text);
+                          DateTime today=DateTime.now();
+                          int age=age_calc(today, dob);
+                          
+                          
+                          await sp.setInt('age', age);
                           await sp.setString('bs', bs.toString());
                           if(sp.getString('bs')==0){
                             await sp.setString('gender', 'male');
@@ -177,6 +209,12 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8, top: 5),
+                child:  new Text('age: $age_state',
+                  style: TextStyle(fontSize: 14, color: Colors.blue),
+                ),
+              ),
               
               
               Padding(
@@ -188,7 +226,7 @@ class _ProfileState extends State<Profile> {
                     itemHeight: 50,  
                     value: bs,
                     validator: (value) {
-                      if (value == null) {
+                      if (value == null ) {
                         return 'Biological Sex is required';
                       }
                       return null;
@@ -271,6 +309,14 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, top: 10),
+                child: const Text(
+                  'explanation on what is mesocycle ',
+                  style: TextStyle(fontSize: 12, color: Colors.black),
+                ),
+              ),
+
             ],
           ),
         ),

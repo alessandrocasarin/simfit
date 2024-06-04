@@ -24,41 +24,48 @@ class NavDrawer extends StatelessWidget {
             ), // BoxDecoration
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children:[
-                Text('Hi!',
+                Text('Hi {nome_da_provider}!',
                   style: TextStyle(
                     fontWeight:FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 16,
                     color: Colors.white,
                   ),
                   textAlign: TextAlign.left,
                 ),
                 ProfilePhoto(
-                  totalWidth: 80,
-                  cornerRadius: 360,
+                  totalWidth: 100,
+                  cornerRadius: 100,
                   color: Colors.white,
-                  image: const AssetImage('assets/user_avatar.jpg'),
+                  image: const AssetImage('assets/user.png'),
                 ),
               ]
             ),
           ),
           ListTile(
             trailing: const Icon(Icons.account_circle),
-            title: const Text('Profile'),
+            title: const Text('Profile',
+              style: TextStyle(
+                    fontWeight:FontWeight.bold)),
             onTap: () {_toProfilePage(context);}
           ),
           ListTile(
             trailing: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            title: const Text('Settings',
+              style: TextStyle(
+                    fontWeight:FontWeight.bold)),
             onTap: () {_toSettingPage(context); }
           ),
           ListTile(
             trailing: const Icon(Icons.info),
-            title: const Text('Info'),
+            title: const Text('Info',
+              style: TextStyle(
+                    fontWeight:FontWeight.bold)),
             onTap: () {_toInfoPage(context);}
           ),
           Padding(
-              padding: EdgeInsets.only(left:60, right:60, top:370),
+              padding: EdgeInsets.only(left:57, right:57, top:370),
               child: ElevatedButton(
                 onPressed: () async {
                   _toLoginPage(context);
@@ -73,7 +80,7 @@ class NavDrawer extends StatelessWidget {
                 child: Text('Log out',
                   style: TextStyle(
                     fontWeight:FontWeight.bold,
-                    fontSize: 13,
+                    fontSize: 14,
                     color: Colors.white,
                   ),
                   textAlign: TextAlign.left,
