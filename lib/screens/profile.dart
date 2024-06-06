@@ -148,7 +148,7 @@ class _ProfileState extends State<Profile> {
                               MaterialStateProperty.all<Color>(Colors.white),
                           backgroundColor: MaterialStateProperty.all<Color>(Colors.blue)),
                       child: const Text('Save',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                     ),
                   ),
                 ]
