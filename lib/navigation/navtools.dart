@@ -98,9 +98,6 @@ class NavDrawer extends StatelessWidget {
   }
 
   void _toLoginPage(BuildContext context) async {
-    final sp = await SharedPreferences.getInstance();
-    await sp.clear(); // clear whole shared preferences
-
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: ((context) => const Login())));
   }
