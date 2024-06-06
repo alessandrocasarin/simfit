@@ -15,10 +15,12 @@ class _ProfileState extends State<Profile> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController datemsController = TextEditingController();
+  final TextEditingController durationmsController = new TextEditingController();
 
   DateTime selectedDate = DateTime.now();
   int? bs;
   int? age_state;
+  
 
   @override
   void initState() {
@@ -53,12 +55,14 @@ class _ProfileState extends State<Profile> {
 
   void _loadPrefs() async {
     final sp = await SharedPreferences.getInstance();
+    
     // Use a default value if the key doesn't exist
     String bioS = sp.getString('bs') ?? "";
     String dob = sp.getString('dob') ?? "";
     String ms_start = sp.getString('ms_start') ?? "";
     String name = sp.getString('name') ?? "";
     int age=sp.getInt('age')?? 0;
+    int ms_duration=sp.getInt('ms_duration')?? 0;
     
     setState(() {
       bs = int.tryParse(bioS);
@@ -66,6 +70,7 @@ class _ProfileState extends State<Profile> {
       datemsController.text = ms_start;
       nameController.text = name;
       age_state = age;
+      durationmsController.text=ms_duration.toString();
     });
   }
 
@@ -97,7 +102,7 @@ class _ProfileState extends State<Profile> {
         backgroundColor: Colors.blue,
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
         child: Form(
           key: _formKey,
           child: Column(
@@ -114,13 +119,7 @@ class _ProfileState extends State<Profile> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final sp = await SharedPreferences.getInstance();
-                       
-                          DateTime dob=DateTime.parse(dateController.text);
-                          DateTime today=DateTime.now();
-                          int age=age_calc(today, dob);
-                          
-                          
-                          await sp.setInt('age', age);
+
                           await sp.setString('bs', bs.toString());
                           if(sp.getString('bs')==0){
                             await sp.setString('gender', 'male');
@@ -129,7 +128,15 @@ class _ProfileState extends State<Profile> {
                           }
                           await sp.setString('dob', dateController.text);
                           await sp.setString('ms_start', datemsController.text);
-                          await sp.setString('name', nameController.text.toString());
+                          await sp.setString('name', nameController.text);
+
+                          DateTime dob=DateTime.parse(dateController.text);
+                          DateTime today=DateTime.now();
+                          int age=age_calc(today, dob);
+                          await sp.setInt('age', age);
+                      
+                          await sp.setInt('ms_duration', int.parse(durationmsController.text));
+                          
                           Navigator.of(context).pop();
                         }
                       },
@@ -148,7 +155,7 @@ class _ProfileState extends State<Profile> {
                 ),
 
               Padding(
-                padding: const EdgeInsets.only(right: 20, top: 30),
+                padding: const EdgeInsets.only(right: 20, top: 15),
                 child: const Text(
                   'About you',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
@@ -209,12 +216,12 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              Padding(
+              /*Padding(
                 padding: const EdgeInsets.only(left: 8, top: 5),
                 child:  new Text('age: $age_state',
                   style: TextStyle(fontSize: 14, color: Colors.blue),
                 ),
-              ),
+              ),*/
               
               
               Padding(
@@ -248,14 +255,15 @@ class _ProfileState extends State<Profile> {
                     items: [
                       DropdownMenuItem(
                         child: Row(children: [
-                          Icon(MdiIcons.genderMale,color: Colors.blue, size: 27), Text('  male')]),
+                          Icon(MdiIcons.genderMale,color: Colors.blue, size: 27), 
+                          Text('  male', style: TextStyle(fontWeight: FontWeight.normal))]),
                         value: 0,
                       ),
                       DropdownMenuItem(
                         child: Row(
                           children: [
                             Icon(MdiIcons.genderFemale,color: Colors.blue, size: 27), 
-                            Text('  female'),
+                            Text('  female',style: TextStyle(fontWeight: FontWeight.normal)),
                           ],
                         ),
                         value: 1
@@ -273,7 +281,7 @@ class _ProfileState extends State<Profile> {
               
               
               Padding(
-                padding: const EdgeInsets.only(right: 20, top: 30),
+                padding: const EdgeInsets.only(right: 20, top: 15),
                 child: const Text(
                   'About the simulation',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
@@ -309,13 +317,41 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              Padding(
+              /*Padding(
                 padding: const EdgeInsets.only(right: 20, top: 10),
                 child: const Text(
                   'explanation on what is mesocycle ',
                   style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
+              ),*/
+
+              Padding(
+                padding: const EdgeInsets.only(top: 20, right: 8.0),
+                child: TextFormField(
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Mesocycle duration is required';
+                    }
+                    return null;
+                  },
+                  controller: durationmsController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100.0),
+                    ),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(100.0))),
+                    prefixIcon: const Icon(
+                      Icons.av_timer,
+                      color: Colors.blue,
+                      size:28
+                    ),
+                    hintText: 'Mesocycle duration (days)',
+                  ),
+                ),
               ),
+
 
             ],
           ),
