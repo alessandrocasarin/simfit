@@ -8,13 +8,21 @@ class HR {
 
   HR.fromJson(String date, Map<String, dynamic> json) :
       timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}'),
-      value = (json["value"] ?? 0).toDouble();
+      value = json["value"] ?? 0;
 }
 
-double getHRAVGFromDay(List<HR> dataHR) {
+Map<String, dynamic> getHRStatisticsFromDay(List<HR> dataHR) {
   if (dataHR.isEmpty) {
-    return 0.0;
+    return {};
   }
-  int sum = dataHR.map((hr) => hr.value).reduce((a, b) => a + b);
-  return sum / dataHR.length;
+
+  dynamic avg = dataHR.map((hr) => hr.value).reduce((a, b) => (a + b)) / dataHR.length;
+  int min = dataHR.map((hr) => hr.value).reduce((a, b) => a < b ? a : b);
+  int max = dataHR.map((hr) => hr.value).reduce((a, b) => a > b ? a : b);
+
+  return {
+    'avg': avg,
+    'min': min,
+    'max': max,
+  };
 }

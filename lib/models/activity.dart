@@ -35,7 +35,7 @@ class Activity {
       duration = Duration(milliseconds: json['duration'] ?? 0),
       steps = json["steps"] ?? 0,
       zonesHR = List<HRZone>.from(json["heartRateZones"].map((zone) => HRZone.fromJson(zone))),
-      avgSpeed = json["speed"] ?? 0.0,
+      avgSpeed = (json["speed"] ?? 0).toDouble(),
       vo2Max = json["vo2Max"]?["vo2Max"]?.toDouble() ?? 0.0,
       elevationGain = (json["elevationGain"] ?? 0).toDouble(),
       startingTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}');
