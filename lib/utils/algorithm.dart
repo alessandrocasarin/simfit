@@ -78,6 +78,8 @@ class Algorithm {
   }
 
   Map<String, double> computeScoresOfNewDay(DateTime newDay, List<Activity> newActivities, Map<DateTime, Map<String, double>> scores ) {
+    scores[newDay] = {};
+    
     scores[newDay]?['TRIMP'] = computeTRIMP(newActivities);
 
     // computing Acute Training Load (ACL) from TRIMP values over last week
