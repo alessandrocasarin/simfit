@@ -6,6 +6,7 @@ import 'package:simfit/navigation/navtools.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/utils/algorithm.dart';
 import 'package:simfit/utils/custom_plot.dart';
+import 'package:simfit/screens/simulation.dart';
 
 class Training extends StatelessWidget {
   static const routename = 'Training';
@@ -19,7 +20,6 @@ class Training extends StatelessWidget {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String gender = sp.getString('gender') ?? 'male';
     int age = sp.getInt('age') ?? 0;
-
     int mesoLen = sp.getInt('mesocycleLength') ?? 30;
     DateTime mesoStart = showDate.subtract(Duration(days: 10));
     String? firstDay = sp.getString('mesocycleStart');
@@ -31,7 +31,7 @@ class Training extends StatelessWidget {
     await Future.delayed(const Duration(seconds: 3));
 
     Map<DateTime, List<Activity>> activities = await impact.getActivitiesFromDateRange(mesoStart, showDate);
-    Map<DateTime, double> restHRs = await impact.getRestHRsFromDateRange(mesoStart, showDate);
+    double restHR = await impact.getRestHRFromDay(showDate);
 
     return {
       'gender': gender,
@@ -39,7 +39,7 @@ class Training extends StatelessWidget {
       'mesocycleLength': mesoLen,
       'daysFromMesocycleStart': showDate.difference(mesoStart).inDays,
       'activities': activities,
-      'restHRs': restHRs,
+      'restHR': restHR,
     };
   }
 
@@ -65,11 +65,10 @@ class Training extends StatelessWidget {
             int mesoLen = snapshot.data!['mesocycleLength'];
             int daysFromStart= snapshot.data!['daysFromMesocycleStart'];
             Map<DateTime, List<Activity>> activities = snapshot.data!['activities'];
-            Map<DateTime, double> restHRs = snapshot.data!['restHRs'];
+            double restHR = snapshot.data!['restHRs'];
 
-            Algorithm algorithm = Algorithm(gender: gender, age: age, mesoLen: mesoLen, daysFromMesoStart: daysFromStart);
-            Map<DateTime, Map<String, double>> mesocycleScores = algorithm
-                .computeScoresOfMesocycle(showDate, activities, restHRs);
+            Algorithm algorithm = Algorithm(gender: gender, age: age, rHR: restHR, mesoLen: mesoLen, daysFromMesoStart: daysFromStart);
+            Map<DateTime, Map<String, double>> mesocycleScores = algorithm.computeScoresOfMesocycle(showDate, activities);
 
             return SafeArea(
               child: Column(
@@ -99,7 +98,8 @@ class Training extends StatelessWidget {
                       Text('Chronic Training Load: ${(mesocycleScores[showDate]!['CTL']!).toStringAsFixed(2)}'),
                       Text('Training Stress Balance: ${(mesocycleScores[showDate]!['TSB']!).toStringAsFixed(2)}'),
                     ],
-                  )
+                  ),
+                  ElevatedButton(onPressed: () => _toSimulationPage(context, mesocycleScores, algorithm), child: Text('RUN SIMULATION'),),
                 ],
               ),
             );
@@ -111,11 +111,15 @@ class Training extends StatelessWidget {
     );
   }
 
-/*
-  void _toSimulationPage(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: ((context) => Simulation())));
+  void _toSimulationPage(BuildContext context, Map<DateTime, Map<String, double>> mesocycleScores, Algorithm algorithm) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Simulation(scores: mesocycleScores, algorithm: algorithm),
+      ),
+    );
   }
-*/
+
+
 }
 
 class TRIMPBadgeDisplay extends StatelessWidget {

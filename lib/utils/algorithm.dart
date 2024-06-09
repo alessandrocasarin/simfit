@@ -4,24 +4,26 @@ import 'package:simfit/models/activity.dart';
 
 class Algorithm {
   late double genderConst;
-  late int ageConst;
+  late double maxHR;
+  late double restHR;
   late int mesocycleLength;
   late int daysFromStart;
 
-  Algorithm({required String gender, required int age, required int mesoLen, required int daysFromMesoStart}) {
+  Algorithm({required String gender, required int age, required double rHR, required int mesoLen, required int daysFromMesoStart}) {
     genderConst = (gender == 'female') ? 1.67 : 1.92;
-    ageConst = age;
+    maxHR = (220-age).toDouble();
+    restHR = rHR;
     mesocycleLength = mesoLen;
     daysFromStart = daysFromMesoStart;
   }
 
-  double computeTRIMP(List<Activity> activities, double restHR) {
+  double computeTRIMP(List<Activity> activities) {
     if (activities.isEmpty) return 0.0;
     
     double trimpTot = 0.0;
 
     for (Activity currentActivity in activities) {
-      double percHRR = (currentActivity.avgHR - restHR) / ((220 - ageConst) - restHR);
+      double percHRR = (currentActivity.avgHR - restHR) / (maxHR - restHR);
       double y = 0.64 * pow(e, genderConst * percHRR);
       double currentTrimp = currentActivity.duration.inMinutes * percHRR * y;
       trimpTot += currentTrimp;
@@ -29,13 +31,13 @@ class Algorithm {
     return trimpTot;
   }
 
-  Map<DateTime, Map<String, double>> computeScoresOfMesocycle(DateTime day, Map<DateTime, List<Activity>> activityList, Map<DateTime, double> restHRList) {
+  Map<DateTime, Map<String, double>> computeScoresOfMesocycle(DateTime day, Map<DateTime, List<Activity>> activityList) {
     Map<DateTime, Map<String, double>> scores = {};
     
     for (var i = 0; i < daysFromStart; i++) {
       DateTime currentDay = DateUtils.dateOnly(day.subtract(Duration(days:i)));
       scores[currentDay] ??= {};
-      scores[currentDay]?['TRIMP'] = computeTRIMP(activityList[currentDay] ?? [], restHRList[currentDay] ?? 0.0);
+      scores[currentDay]?['TRIMP'] = computeTRIMP(activityList[currentDay] ?? []);
     }
 
     for (var i = 0; i < daysFromStart; i++) {
@@ -75,38 +77,37 @@ class Algorithm {
     return scores;
   }
 
-  Map<DateTime, Map<String, double>> computeScoresOfNewDay(DateTime day, Map<DateTime, Map<String, double>> scores, double dayTRIMP) {
-    Map<DateTime, Map<String, double>> updatedScores = scores;
-    updatedScores[day]?['TRIMP'] = dayTRIMP;
+  Map<String, double> computeScoresOfNewDay(DateTime newDay, List<Activity> newActivities, Map<DateTime, Map<String, double>> scores ) {
+    scores[newDay]?['TRIMP'] = computeTRIMP(newActivities);
 
     // computing Acute Training Load (ACL) from TRIMP values over last week
     double num = 0.0;
     double den = 0.0;
     int limit = (daysFromStart < 7) ? daysFromStart : 7;
     for (var i = 0; i < limit; i++) {
-      DateTime currentDay = day.subtract(Duration(days:i));
-      num += (updatedScores[currentDay]?['TRIMP'] ?? 0.0) * pow(e, -i/7);
+      DateTime currentDay = newDay.subtract(Duration(days:i));
+      num += (scores[currentDay]?['TRIMP'] ?? 0.0) * pow(e, -i/7);
       den += pow(e, -i/7);
     }
     double acl = num/den;
-    updatedScores[day]?['ACL'] = acl;
+    scores[newDay]?['ACL'] = acl;
 
     // computing Chronic Training Load (CTL) from TRIMP values over mesocycle
     num = 0.0;
     den = 0.0;
     for (var i = 0; i < daysFromStart; i++) {
-      DateTime currentDay = day.subtract(Duration(days:i));
-      num += (updatedScores[currentDay]?['TRIMP'] ?? 0.0)*pow(e, -i/mesocycleLength);
+      DateTime currentDay = newDay.subtract(Duration(days:i));
+      num += (scores[currentDay]?['TRIMP'] ?? 0.0)*pow(e, -i/mesocycleLength);
       den += pow(e, -i/mesocycleLength);
     }
     double ctl = num/den;
-    updatedScores[day]?['CTL'] = ctl;
+    scores[newDay]?['CTL'] = ctl;
 
     // Training Stress Balance (TSB)
     double tsb = ctl - acl;
-    updatedScores[day]?['TSB'] = tsb;
+    scores[newDay]?['TSB'] = tsb;
 
-    return updatedScores;
+    return (scores[newDay] ?? {});
   }
 
 }
