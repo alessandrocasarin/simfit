@@ -245,7 +245,7 @@ class Impact {
     String formattedDay = DateFormat('yyyy-MM-dd').format(day);
     var r = await http.get(
       Uri.parse(
-          '${Impact.baseUrl}/data/v1/sleep/patients/$patientUsername/day/$formattedDay/'),
+          '${Impact.baseUrl}/data/v1/resting_heart_rate/patients/$patientUsername/day/$formattedDay/'),
       headers: header,
     );
     if (r.statusCode != 200) return 0.0;

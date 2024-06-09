@@ -3,10 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simfit/models/activity.dart';
 import 'package:simfit/navigation/navtools.dart';
+import 'package:simfit/screens/simulation.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/utils/algorithm.dart';
 import 'package:simfit/utils/custom_plot.dart';
-import 'package:simfit/screens/simulation.dart';
 
 class Training extends StatelessWidget {
   static const routename = 'Training';
@@ -65,61 +65,64 @@ class Training extends StatelessWidget {
             int mesoLen = snapshot.data!['mesocycleLength'];
             int daysFromStart= snapshot.data!['daysFromMesocycleStart'];
             Map<DateTime, List<Activity>> activities = snapshot.data!['activities'];
-            double restHR = snapshot.data!['restHRs'];
+            double restHR = snapshot.data!['restHR'];
 
             Algorithm algorithm = Algorithm(gender: gender, age: age, rHR: restHR, mesoLen: mesoLen, daysFromMesoStart: daysFromStart);
             Map<DateTime, Map<String, double>> mesocycleScores = algorithm.computeScoresOfMesocycle(showDate, activities);
 
             return SafeArea(
-              child: Column(
-                children: [
-                  TRIMPBadgeDisplay(
-                    index: (mesocycleScores[showDate]?['TRIMP'] ?? 0.0),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    width: 700.0,
-                    height: 500.0,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFedf1f1),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TRIMPBadgeDisplay(
+                      index: (mesocycleScores[showDate]?['TRIMP'] ?? 0.0),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      width: 700.0,
+                      height: 400.0,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFedf1f1),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15.0),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: CustomPlot(scores: mesocycleScores),
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: CustomPlot(scores: mesocycleScores),
+                    const SizedBox(height: 20),
+                    Column(
+                      children: [
+                        Text('Acute Training Load: ${(mesocycleScores[showDate]!['ACL']!).toStringAsFixed(2)}'),
+                        Text('Chronic Training Load: ${(mesocycleScores[showDate]!['CTL']!).toStringAsFixed(2)}'),
+                        Text('Training Stress Balance: ${(mesocycleScores[showDate]!['TSB']!).toStringAsFixed(2)}'),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 30),
-                  Column(
-                    children: [
-                      Text('Acute Training Load: ${(mesocycleScores[showDate]!['ACL']!).toStringAsFixed(2)}'),
-                      Text('Chronic Training Load: ${(mesocycleScores[showDate]!['CTL']!).toStringAsFixed(2)}'),
-                      Text('Training Stress Balance: ${(mesocycleScores[showDate]!['TSB']!).toStringAsFixed(2)}'),
-                    ],
-                  ),
-                  ElevatedButton(onPressed: () => _toSimulationPage(context, mesocycleScores, algorithm), child: Text('RUN SIMULATION'),),
-                ],
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => _toSimulationPage(context, mesocycleScores, algorithm),
+                      child: Text('RUN SIMULATION'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
         },
       ),
       drawer: NavDrawer(),
-      //floatingActionButton: ElevatedButton(onPressed: _toSimulationPage(context, mesocycleScores, algorithm), child: Text('RUN SIMULATION'),),
     );
   }
 
   void _toSimulationPage(BuildContext context, Map<DateTime, Map<String, double>> mesocycleScores, Algorithm algorithm) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => Simulation(scores: mesocycleScores, algorithm: algorithm),
+        builder: (context) => SessionSimulation(scores: mesocycleScores, algorithm: algorithm),
       ),
     );
   }
-
-
 }
 
 class TRIMPBadgeDisplay extends StatelessWidget {
@@ -153,28 +156,28 @@ class TRIMPBadgeDisplay extends StatelessWidget {
       children: [
         Text(
           'TRIMP: ${double.parse((index).toStringAsFixed(2))}',
-          style: TextStyle(fontSize: 24),
+          style: TextStyle(fontSize: 20),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 5),
         Padding(
-          padding: EdgeInsetsDirectional.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.grey[300],
             color: badgeColor,
-            minHeight: 10,
+            minHeight: 8,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 5),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: badgeColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             badgeText,
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
         ),
       ],
