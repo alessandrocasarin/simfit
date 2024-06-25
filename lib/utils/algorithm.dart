@@ -45,7 +45,7 @@ class Algorithm {
       // computing Acute Training Load (ACL) from TRIMP values over last week
       double num = 0.0;
       double den = 0.0;
-      int limit = (daysFromStart < 7) ? daysFromStart : 7;
+      int limit = (daysFromStart-i < 7) ? (daysFromStart-i) : 7;
       for (var j = 0; j < limit; j++) {
         DateTime tempDay = currentDay.subtract(Duration(days:j));
         num += (scores[tempDay]?['TRIMP'] ?? 0.0) * pow(e, -j/7);

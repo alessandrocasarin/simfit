@@ -20,15 +20,15 @@ class Training extends StatelessWidget {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String gender = sp.getString('gender') ?? 'male';
     int age = sp.getInt('age') ?? 0;
-    int mesoLen = sp.getInt('mesocycleLength') ?? 30;
-    DateTime mesoStart = showDate.subtract(Duration(days: 10));
+    int mesoLen = sp.getInt('mesocycleLength') ?? 42;
+    DateTime mesoStart = showDate.subtract(Duration(days: 30));
     String? firstDay = sp.getString('mesocycleStart');
     if (firstDay != null) {
       mesoStart = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(firstDay));
     }
 
     // Simulate network calls
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     Map<DateTime, List<Activity>> activities = await impact.getActivitiesFromDateRange(mesoStart, showDate);
     double restHR = await impact.getRestHRFromDay(showDate);
@@ -37,7 +37,7 @@ class Training extends StatelessWidget {
       'gender': gender,
       'age': age,
       'mesocycleLength': mesoLen,
-      'daysFromMesocycleStart': showDate.difference(mesoStart).inDays,
+      'daysFromMesocycleStart': showDate.difference(mesoStart).inDays+1,
       'activities': activities,
       'restHR': restHR,
     };
@@ -45,6 +45,9 @@ class Training extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Training Page'),
@@ -79,13 +82,10 @@ class Training extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Container(
-                      width: 700.0,
-                      height: 400.0,
+                      width: 0.8*screenWidth,
+                      height: 0.5*screenHeight,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFedf1f1),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.0),
-                        ),
+                        color: Colors.transparent,
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(10.0),
