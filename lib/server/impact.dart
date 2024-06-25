@@ -106,7 +106,14 @@ class Impact {
   //This method prepares the Bearer header for the calls
   Future<Map<String, String>> getBearer() async {
     if (!await checkSavedToken()) {
-      await refreshTokens();
+      if (!await checkSavedToken(refresh: true)) {
+        final sp = await SharedPreferences.getInstance();
+        String username = await sp.getString('username') ?? '';
+        String password = await sp.getString('password') ?? '';
+        await getAndStoreTokens(username, password);
+      } else {
+        await refreshTokens();
+      }
     }
     final sp = await SharedPreferences.getInstance();
     final token = sp.getString('access');
