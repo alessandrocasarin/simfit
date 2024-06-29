@@ -143,6 +143,11 @@ class Impact {
   Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
     Map<DateTime, List<Activity>> activities = {};
 
+    if (start.isAtSameMomentAs(end)) {
+      activities[start] = await getActivitiesFromDay(start);
+      return activities;
+    }
+
     List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
     for (var element in formattedStartEnd) {
       var header = await getBearer();

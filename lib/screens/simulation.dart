@@ -6,8 +6,6 @@ import 'package:simfit/providers/simulation_provider.dart';
 class SessionSimulation extends StatefulWidget {
   static const routename = 'SessionSimulation';
 
-  //final Map<DateTime, Map<String, double>> scores;
-  //final Algorithm algorithm;
   late SimulationProvider simProv;
 
   SessionSimulation({super.key, required scores, required algorithm}) {
@@ -19,20 +17,21 @@ class SessionSimulation extends StatefulWidget {
 }
 
 class _SessionSimulationState extends State<SessionSimulation> {
-  final _durationController = TextEditingController();
-  double _intensitySliderValue = 130; // Initial slider value (130 bpm)
   bool _firstSetup = true;
+  List<Map<String, dynamic>> _additionalBlocks = [];
 
   @override
   void dispose() {
-    _durationController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     _firstSetup = true;
-    _intensitySliderValue = 130;
+    _additionalBlocks.add({
+      'controller': TextEditingController(),
+      'sliderValue': 130.0,
+    });
     super.initState();
   }
 
@@ -50,60 +49,124 @@ class _SessionSimulationState extends State<SessionSimulation> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                TextField(
-                  controller: _durationController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Duration (minutes)',
-                  ),
-                ),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Session intensity (bpm)'),
-                    Text('${_intensitySliderValue.toInt()} bpm'),
-                  ],
-                ),
-                Slider(
-                  value: _intensitySliderValue,
-                  min: widget.simProv.algorithm.restHR,
-                  max: widget.simProv.algorithm.maxHR,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _intensitySliderValue = newValue;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_durationController.text != '') {
-                      List<Activity> simActivities = [];
-                      simActivities.add(
-                        Activity(
-                          activityName: 'Simulated activity',
-                          avgHR: _intensitySliderValue.toInt(),
-                          calories: 0,
-                          distance: 0,
-                          duration: Duration(
-                              minutes:
-                                  int.tryParse(_durationController.text) ?? 0),
-                          steps: 0,
-                          zonesHR: [],
-                          avgSpeed: 0.0,
-                          vo2Max: 0.0,
-                          elevationGain: 0.0,
-                          startingTime: DateUtils.dateOnly(DateTime.now()),
+                ..._additionalBlocks.map((block) {
+                  TextEditingController durationController =
+                      block['controller'];
+                  double sliderValue = block['sliderValue'];
+                  return Column(
+                    children: [
+                      TextField(
+                        controller: durationController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Duration (minutes)',
                         ),
-                      );
-                      setState(() {
-                        _firstSetup = false;
-                      });
-                      widget.simProv.computeSimulatedScores(simActivities);
-                    }
-                  },
-                  child: const Text('SIMULATE SESSION'),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Session intensity (bpm)'),
+                          Text('${sliderValue.toInt()} bpm'),
+                        ],
+                      ),
+                      Slider(
+                        value: sliderValue,
+                        min: widget.simProv.algorithm.restHR,
+                        max: widget.simProv.algorithm.maxHR,
+                        onChanged: (newValue) {
+                          setState(() {
+                            block['sliderValue'] = newValue;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  );
+                }).toList(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _additionalBlocks.add({
+                              'controller': TextEditingController(),
+                              'sliderValue': 130.0,
+                            });
+                          });
+                        },
+                        child: Icon(Icons.add),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_additionalBlocks.length > 1) {
+                            setState(() {
+                              _additionalBlocks.removeLast();
+                            });
+                          }
+                        },
+                        child: Icon(Icons.remove),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          bool allFilled = true;
+                          List<Activity> simActivities = [];
+                          for (var block in _additionalBlocks) {
+                            if (block['controller'].text.isEmpty) {
+                              allFilled = false;
+                              break;
+                            } else {
+                              simActivities.add(
+                                Activity(
+                                  activityName: 'Simulated activity',
+                                  avgHR: block['sliderValue'].toInt(),
+                                  calories: 0,
+                                  distance: 0,
+                                  duration: Duration(
+                                    minutes: int.tryParse(
+                                            block['controller'].text) ??
+                                        0,
+                                  ),
+                                  steps: 0,
+                                  zonesHR: [],
+                                  avgSpeed: 0.0,
+                                  vo2Max: 0.0,
+                                  elevationGain: 0.0,
+                                  startingTime:
+                                      DateUtils.dateOnly(DateTime.now()),
+                                ),
+                              );
+                            }
+                          }
+                          if (!allFilled) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Some activity parameters are empty!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          setState(() {
+                            _firstSetup = false;
+                          });
+                          widget.simProv.computeSimulatedScores(simActivities);
+                        },
+                        child: const Text('SIMULATE SESSION'),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 40),
                 Consumer<SimulationProvider>(
