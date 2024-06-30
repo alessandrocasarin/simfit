@@ -18,7 +18,7 @@ class SessionSimulation extends StatefulWidget {
 
 class _SessionSimulationState extends State<SessionSimulation> {
   bool _firstSetup = true;
-  List<Map<String, dynamic>> _additionalBlocks = [];
+  List<Map<String, dynamic>> _activityBlocks = [];
 
   @override
   void dispose() {
@@ -28,7 +28,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
   @override
   void initState() {
     _firstSetup = true;
-    _additionalBlocks.add({
+    _activityBlocks.add({
       'controller': TextEditingController(),
       'sliderValue': 130.0,
     });
@@ -49,25 +49,32 @@ class _SessionSimulationState extends State<SessionSimulation> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const SizedBox(height: 20),
-                ..._additionalBlocks.map((block) {
+                ..._activityBlocks.map((block) {
                   TextEditingController durationController =
                       block['controller'];
                   double sliderValue = block['sliderValue'];
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          'Activity #${_activityBlocks.indexOf(block)+1}',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                       TextField(
                         controller: durationController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          labelText: 'Duration (minutes)',
+                          labelText: 'Duration [minutes]',
                         ),
                       ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Session intensity (bpm)'),
+                          const Text('Session intensity [avg bpm]'),
                           Text('${sliderValue.toInt()} bpm'),
                         ],
                       ),
@@ -81,10 +88,11 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           });
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                     ],
                   );
                 }).toList(),
+                SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -93,7 +101,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _additionalBlocks.add({
+                            _activityBlocks.add({
                               'controller': TextEditingController(),
                               'sliderValue': 130.0,
                             });
@@ -106,9 +114,9 @@ class _SessionSimulationState extends State<SessionSimulation> {
                       padding: EdgeInsets.all(5.0),
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_additionalBlocks.length > 1) {
+                          if (_activityBlocks.length > 1) {
                             setState(() {
-                              _additionalBlocks.removeLast();
+                              _activityBlocks.removeLast();
                             });
                           }
                         },
@@ -121,7 +129,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                         onPressed: () {
                           bool allFilled = true;
                           List<Activity> simActivities = [];
-                          for (var block in _additionalBlocks) {
+                          for (var block in _activityBlocks) {
                             if (block['controller'].text.isEmpty) {
                               allFilled = false;
                               break;
@@ -179,18 +187,19 @@ class _SessionSimulationState extends State<SessionSimulation> {
                       return Column(
                         children: [
                           Text(
-                              'TRIMP simulation: ${provider.simulatedScores['TRIMP']}'),
+                              'TRIMP simulation: ${provider.simulatedScores['TRIMP']!.toStringAsFixed(2)}'),
                           Text(
-                              'ACL simulation: ${provider.simulatedScores['ACL']}'),
+                              'ACL simulation: ${provider.simulatedScores['ACL']!.toStringAsFixed(2)}'),
                           Text(
-                              'CTL simulation: ${provider.simulatedScores['CTL']}'),
+                              'CTL simulation: ${provider.simulatedScores['CTL']!.toStringAsFixed(2)}'),
                           Text(
-                              'TSB simulation: ${provider.simulatedScores['TSB']}'),
+                              'TSB simulation: ${provider.simulatedScores['TSB']!.toStringAsFixed(2)}'),
                         ],
                       );
                     }
                   },
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),

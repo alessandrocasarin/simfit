@@ -205,9 +205,8 @@ class PlotContainer extends StatelessWidget {
 
 class TRIMPDisplay extends StatelessWidget {
   final double index;
-  final double maxIndex;
 
-  TRIMPDisplay({Key? key, required this.index, this.maxIndex = 1000})
+  TRIMPDisplay({Key? key, required this.index})
       : super(key: key);
 
   @override
@@ -216,40 +215,31 @@ class TRIMPDisplay extends StatelessWidget {
     Color badgeColor = Colors.green;
 
     // Determine the badge text and color based on the index
-    if (index < 350) {
+    if (index < 50) {
       badgeText = 'Easy';
       badgeColor = Colors.green;
-    } else if (index < 700) {
+    } else if (index < 120) {
       badgeText = 'Moderate';
       badgeColor = Colors.orange;
-    } else {
+    } else if (index < 250) {
       badgeText = 'Hard';
       badgeColor = Colors.red;
+    } else {
+      badgeText = 'Very hard';
+      badgeColor = Colors.black;
     }
 
-    // Calculate progress percentage
-    double progress = index / maxIndex;
-
     return Container(
-      margin: EdgeInsets.all(10.0),
-      child: Column(
+      margin: EdgeInsets.all(20.0),
+      child: Center(
+        child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'TRIMP: ${double.parse((index).toStringAsFixed(2))}',
+            'Yesterday training load: TRIMP=${double.parse((index).toStringAsFixed(2))}',
             style: TextStyle(fontSize: 20),
           ),
-          const SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              color: badgeColor,
-              minHeight: 8,
-            ),
-          ),
-          const SizedBox(height: 5),
+          const SizedBox(width: 10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -262,7 +252,7 @@ class TRIMPDisplay extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      ),),
     );
   }
 }
