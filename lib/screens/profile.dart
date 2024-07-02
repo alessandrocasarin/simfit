@@ -276,7 +276,7 @@ class _ProfileState extends State<Profile> {
               const Padding(
                 padding: EdgeInsets.only(right: 20, top: 15),
                 child: Text(
-                  'About the simulation',
+                  'About the training',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
