@@ -50,8 +50,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
             child: Column(
               children: [
                 ..._activityBlocks.map((block) {
-                  TextEditingController durationController =
-                      block['controller'];
+                  TextEditingController durationController = block['controller'];
                   double sliderValue = block['sliderValue'];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

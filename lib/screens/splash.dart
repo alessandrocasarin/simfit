@@ -27,12 +27,28 @@ class Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => _checkLogin(context));
+    Future.delayed(const Duration(seconds: 2), () => _checkLogin(context));
     return Scaffold(
       body: Center(
-        child: Image.asset(
-          'assets/running-icon.jpg',
-          scale: 4,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/running-icon.jpg',
+                    scale: 4,
+                  ),
+                  SizedBox(height: 10),
+                  const CircularProgressIndicator.adaptive(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simfit/models/activity.dart';
 import 'package:simfit/navigation/navtools.dart';
 import 'package:simfit/providers/score_provider.dart';
+import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/screens/simulation.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/utils/algorithm.dart';
@@ -23,39 +22,35 @@ class _TrainingState extends State<Training> {
   final Impact impact = Impact();
   late ScoreProvider scoreProvider;
   late Future<Map<String, dynamic>> _fetchDataFuture;
+  late UserProvider _userProvider;
 
   @override
   void initState() {
     super.initState();
-    _fetchDataFuture = _fetchData();
+    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    _fetchDataFuture = _fetchData(context);
   }
 
-  Future<Map<String, dynamic>> _fetchData() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    String gender = sp.getString('gender') ?? 'male';
-    int age = sp.getInt('age') ?? 0;
-    int mesoLen = sp.getInt('mesocycleLength') ?? 42;
-    DateTime mesoStart = showDate.subtract(Duration(days: 30));
-    String? firstDay = sp.getString('mesocycleStart');
-    if (firstDay != null) {
-      mesoStart = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(firstDay));
+  Future<Map<String, dynamic>> _fetchData(BuildContext context) async {
+    try {
+      // Simulate network calls
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Fetch activities and restHR based on userProvider data
+      final Map<DateTime, List<Activity>> activities =
+          await impact.getActivitiesFromDateRange(
+        _userProvider.mesocycleStartDate ?? DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 30))),
+        showDate,
+      );
+      final double restHR = await impact.getRestHRFromDay(showDate);
+
+      return {
+        'activities': activities,
+        'restHR': restHR,
+      };
+    } catch (e) {
+      throw Exception('Failed to fetch data: $e');
     }
-
-    // Simulate network calls
-    await Future.delayed(const Duration(seconds: 2));
-
-    Map<DateTime, List<Activity>> activities =
-        await impact.getActivitiesFromDateRange(mesoStart, showDate);
-    double restHR = await impact.getRestHRFromDay(showDate);
-
-    return {
-      'gender': gender,
-      'age': age,
-      'mesocycleLength': mesoLen,
-      'daysFromMesocycleStart': showDate.difference(mesoStart).inDays + 1,
-      'activities': activities,
-      'restHR': restHR,
-    };
   }
 
   @override
@@ -75,26 +70,25 @@ class _TrainingState extends State<Training> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            String gender = snapshot.data!['gender'];
-            int age = snapshot.data!['age'];
-            int mesoLen = snapshot.data!['mesocycleLength'];
-            int daysFromStart = snapshot.data!['daysFromMesocycleStart'];
             Map<DateTime, List<Activity>> activities =
                 snapshot.data!['activities'];
             double restHR = snapshot.data!['restHR'];
 
             Algorithm algorithm = Algorithm(
-              gender: gender,
-              age: age,
+              gender: _userProvider.gender ?? 'male',
+              age: _userProvider.age ?? 0,
               rHR: restHR,
-              mesoLen: mesoLen,
-              daysFromMesoStart: daysFromStart,
+              mesoLen: _userProvider.mesocycleLength ?? 42,
+              daysFromMesoStart: showDate.difference(_userProvider.mesocycleStartDate ?? DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 30))))
+                      .inDays + 1,
             );
             Map<DateTime, Map<String, double>> mesocycleScores =
                 algorithm.computeScoresOfMesocycle(showDate, activities);
 
             scoreProvider = ScoreProvider(
-                day: showDate, scoresOfDay: mesocycleScores[showDate]!);
+              day: showDate,
+              scoresOfDay: mesocycleScores[showDate]!,
+            );
 
             return SafeArea(
               child: SingleChildScrollView(
@@ -206,8 +200,7 @@ class PlotContainer extends StatelessWidget {
 class TRIMPDisplay extends StatelessWidget {
   final double index;
 
-  TRIMPDisplay({Key? key, required this.index})
-      : super(key: key);
+  TRIMPDisplay({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -233,26 +226,27 @@ class TRIMPDisplay extends StatelessWidget {
       margin: EdgeInsets.all(20.0),
       child: Center(
         child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Yesterday training load: TRIMP=${double.parse((index).toStringAsFixed(2))}',
-            style: TextStyle(fontSize: 20),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: badgeColor,
-              borderRadius: BorderRadius.circular(20),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Yesterday training load: TRIMP=${double.parse((index).toStringAsFixed(2))}',
+              style: TextStyle(fontSize: 20),
             ),
-            child: Text(
-              badgeText,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: badgeColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                badgeText,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
             ),
-          ),
-        ],
-      ),),
+          ],
+        ),
+      ),
     );
   }
 }
