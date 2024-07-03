@@ -27,7 +27,7 @@ class Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 2), () => _checkLogin(context));
+    Future.delayed(const Duration(seconds: 3), () => _checkLogin(context));
     return Scaffold(
       body: Center(
         child: Column(
@@ -40,7 +40,7 @@ class Splash extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/running-icon.jpg',
+                    'assets/simfit-logo.png',
                     scale: 4,
                   ),
                   SizedBox(height: 10),
