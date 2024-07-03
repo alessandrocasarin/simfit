@@ -43,7 +43,7 @@ class NavDrawer extends StatelessWidget {
                     color: Colors.white,
                     image: AssetImage(
                       userProvider.gender == 'female'
-                          ? 'assets/femmale-avatar.png'
+                          ? 'assets/female-avatar.png'
                           : 'assets/male-avatar.png',
                     ),
                   ),
