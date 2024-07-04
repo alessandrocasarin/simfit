@@ -62,6 +62,7 @@ class HRZone {
       minHR = json["min"] ?? 0,
       maxHR = json["max"] ?? 0,
       minutes = json["minutes"] ?? 0,
-      caloriesOut = (json["caloriesOut"] ?? 0).toDouble();
-
+      caloriesOut = (json["caloriesOut"] is int)
+          ? (json["caloriesOut"] as int).toDouble()
+          : (json["caloriesOut"] ?? 0.0);
 }
