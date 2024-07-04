@@ -146,7 +146,7 @@ class NavDrawer extends StatelessWidget {
   }
 
   void _toTrainingPage(BuildContext context) {
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: ((context) => Training())),
     );
   }

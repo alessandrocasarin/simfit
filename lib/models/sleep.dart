@@ -10,7 +10,7 @@ class Sleep {
 
   Sleep.fromJson(String date, Map<String, dynamic> json) :
       day = DateFormat('yyyy-MM-dd').parse(date),
-      duration = Duration(milliseconds: json["duration"] ?? 0),
-      efficiency = json["efficiency"] ?? 0,
-      mainSleep = json["mainSleep"] ?? false;
+      duration = Duration(milliseconds: (json["duration"] ?? 0).toInt()),
+      efficiency = (json["efficiency"] ?? 0).toInt(),
+      mainSleep = (json["mainSleep"] ?? false).toBool();
 }

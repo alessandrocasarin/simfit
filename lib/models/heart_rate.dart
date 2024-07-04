@@ -8,7 +8,7 @@ class HR {
 
   HR.fromJson(String date, Map<String, dynamic> json) :
       timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}'),
-      value = json["value"] ?? 0;
+      value = (json["value"] ?? 0).toInt();
 }
 
 Map<String, dynamic> getHRStatisticsFromDay(List<HR> dataHR) {

@@ -29,14 +29,14 @@ class Activity {
 
   Activity.fromJson(String date, Map<String, dynamic> json) :
       activityName = json["activityName"] ?? '',
-      avgHR = json["averageHeartRate"] ?? 0,
-      calories = json["calories"] ?? 0,
+      avgHR = (json["averageHeartRate"] ?? 0).toInt(),
+      calories = (json["calories"] ?? 0).toInt(),
       distance = (json["distance"] ?? 0).toDouble(),
-      duration = Duration(milliseconds: json['duration'] ?? 0),
-      steps = json["steps"] ?? 0,
+      duration = Duration(milliseconds: (json["duration"] ?? 0).toInt()),
+      steps = (json["steps"] ?? 0).toInt(),
       zonesHR = List<HRZone>.from(json["heartRateZones"].map((zone) => HRZone.fromJson(zone))),
       avgSpeed = (json["speed"] ?? 0).toDouble(),
-      vo2Max = json["vo2Max"]?["vo2Max"]?.toDouble() ?? 0.0,
+      vo2Max = (json["vo2Max"]?["vo2Max"] ?? 0.0).toDouble(),
       elevationGain = (json["elevationGain"] ?? 0).toDouble(),
       startingTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}');
      
@@ -57,7 +57,7 @@ class HRZone {
 
   HRZone.fromJson(Map<String, dynamic> json) :
       name = json["name"] ?? '',
-      minHR = json["min"] ?? 0,
-      maxHR = json["max"] ?? 0,
-      minutes = json["minutes"] ?? 0;
+      minHR = (json["min"] ?? 0).toInt(),
+      maxHR = (json["max"] ?? 0).toInt(),
+      minutes = (json["minutes"] ?? 0).toInt();
 }
