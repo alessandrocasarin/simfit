@@ -47,22 +47,17 @@ class HRZone {
   final int minHR;
   final int maxHR;
   final int minutes;
-  final double caloriesOut;
 
   HRZone({
     required this.name,
     required this.minHR,
     required this.maxHR,
     required this.minutes,
-    required this.caloriesOut,
   });
 
   HRZone.fromJson(Map<String, dynamic> json) :
       name = json["name"] ?? '',
       minHR = json["min"] ?? 0,
       maxHR = json["max"] ?? 0,
-      minutes = json["minutes"] ?? 0,
-      caloriesOut = (json["caloriesOut"] is int)
-          ? (json["caloriesOut"] as int).toDouble()
-          : (json["caloriesOut"] ?? 0.0);
+      minutes = json["minutes"] ?? 0;
 }
