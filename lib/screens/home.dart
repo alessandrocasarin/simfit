@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:math' as math;
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:simfit/navigation/navtools.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:math' as math;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -25,29 +23,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  void dispose() {
-    // Dispose state variables if necessary
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'SimFit',
-          style: GoogleFonts.outfit(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-            ),
-          ),
-        ),
-        actions: [],
+        backgroundColor: Colors.blue,
+        title: Text('SimFit',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
         centerTitle: false,
-        elevation: 2,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -60,15 +42,23 @@ class _HomeState extends State<Home> {
               children: [
                 Padding(
                   padding: EdgeInsets.all(16),
-                  child: IconButton(
-                    iconSize: 40,
-                    color: Color(0x2939A9EF),
-                    icon: Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Color.fromARGB(255, 20, 24, 27),
-                      size: 30,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      border: Border.all(
+                        color: Color.fromARGB(255, 20, 24, 27),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed: () {},
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios_rounded,
+                        color: Color.fromARGB(255, 20, 24, 27),
+                        size: 30,
+                      ),
+                      onPressed: () {},
+                    ),
                   ),
                 ),
                 Expanded(
@@ -78,24 +68,32 @@ class _HomeState extends State<Home> {
                       '12-06-2023',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontFamily: 'Outfit',
-                          color: Color.fromARGB(255, 20, 24, 27),
-                          fontSize: 24,
-                          letterSpacing: 0),
+                        color: Color(0xFF14181B),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(16),
-                  child: IconButton(
-                    iconSize: 40,
-                    color: Color(0x2939A9EF),
-                    icon: Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Color.fromARGB(255, 20, 24, 27),
-                      size: 30,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      border: Border.all(
+                        color: Color.fromARGB(255, 20, 24, 27),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed: () {},
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Color.fromARGB(255, 20, 24, 27),
+                        size: 30,
+                      ),
+                      onPressed: () {},
+                    ),
                   ),
                 ),
               ],
@@ -104,9 +102,9 @@ class _HomeState extends State<Home> {
               padding: EdgeInsets.all(16),
               child: Container(
                 width: 405,
-                height: 216,
+                height: 240,
                 decoration: BoxDecoration(
-                  color: Color(0x2939A9EF),
+                  color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(14),
                   shape: BoxShape.rectangle,
                 ),
@@ -123,13 +121,13 @@ class _HomeState extends State<Home> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(4),
+                            padding: EdgeInsetsDirectional.fromSTEB(6, 4, 0, 0),
                             child: Text(
                               'Daily activity',
                               style: TextStyle(
-                                fontFamily: 'Outfit',
+                                color: Color(0xFF14181B),
+                                fontWeight: FontWeight.w600,
                                 fontSize: 24,
-                                letterSpacing: 0,
                               ),
                             ),
                           ),
@@ -168,9 +166,9 @@ class _HomeState extends State<Home> {
                                             child: Text(
                                               'Steps',
                                               style: TextStyle(
-                                                fontFamily: 'Readex Pro',
-                                                fontSize: 20,
-                                                letterSpacing: 0,
+                                                color: Color(0xFF14181B),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 22,
                                               ),
                                             ),
                                           ),
@@ -182,10 +180,9 @@ class _HomeState extends State<Home> {
                                           Text(
                                             '12500',
                                             style: TextStyle(
-                                              fontFamily: 'Readex Pro',
-                                              fontSize: 22,
-                                              letterSpacing: 0,
-                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF14181B),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24,
                                             ),
                                           ),
                                         ],
@@ -216,9 +213,9 @@ class _HomeState extends State<Home> {
                                             child: Text(
                                               'Heart rate',
                                               style: TextStyle(
-                                                fontFamily: 'Readex Pro',
-                                                fontSize: 20,
-                                                letterSpacing: 0,
+                                                color: Color(0xFF14181B),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 22,
                                               ),
                                             ),
                                           ),
@@ -230,10 +227,9 @@ class _HomeState extends State<Home> {
                                           Text(
                                             '68 bpm',
                                             style: TextStyle(
-                                              fontFamily: 'Readex Pro',
-                                              fontSize: 22,
-                                              letterSpacing: 0,
-                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF14181B),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24,
                                             ),
                                           ),
                                         ],
@@ -269,9 +265,9 @@ class _HomeState extends State<Home> {
                                             child: Text(
                                               'Calories',
                                               style: TextStyle(
-                                                fontFamily: 'Readex Pro',
-                                                fontSize: 20,
-                                                letterSpacing: 0,
+                                                color: Color(0xFF14181B),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 22,
                                               ),
                                             ),
                                           ),
@@ -283,10 +279,9 @@ class _HomeState extends State<Home> {
                                           Text(
                                             '1650',
                                             style: TextStyle(
-                                              fontFamily: 'Readex Pro',
-                                              fontSize: 22,
-                                              letterSpacing: 0,
-                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF14181B),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24,
                                             ),
                                           ),
                                         ],
@@ -317,9 +312,9 @@ class _HomeState extends State<Home> {
                                             child: Text(
                                               'Sleep',
                                               style: TextStyle(
-                                                fontFamily: 'Readex Pro',
-                                                fontSize: 20,
-                                                letterSpacing: 0,
+                                                color: Color(0xFF14181B),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 22,
                                               ),
                                             ),
                                           ),
@@ -331,10 +326,9 @@ class _HomeState extends State<Home> {
                                           Text(
                                             '7 h 53 min',
                                             style: TextStyle(
-                                              fontFamily: 'Readex Pro',
-                                              fontSize: 22,
-                                              letterSpacing: 0,
-                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF14181B),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 24,
                                             ),
                                           ),
                                         ],
@@ -385,7 +379,7 @@ class _HomeState extends State<Home> {
                               padding: EdgeInsets.all(8),
                               child: FaIcon(
                                 FontAwesomeIcons.running,
-                                color: Color(0xFF107CFF),
+                                color: Colors.blue,
                                 size: 26,
                               ),
                             ),
@@ -393,9 +387,10 @@ class _HomeState extends State<Home> {
                               '7:30 - Run (manual)',
                               textAlign: TextAlign.start,
                               style: TextStyle(
-                                fontFamily: 'Outfit',
+                                color: Color(0xFF14181B),
+                                fontWeight: FontWeight.bold,
                                 fontSize: 24,
-                                letterSpacing: 0,
+                                fontStyle: FontStyle.normal,
                               ),
                             ),
                           ],
@@ -424,9 +419,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '00:53:49',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -445,9 +440,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '9.50 km/h',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -466,9 +461,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '143 bpm',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -487,9 +482,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '48.8 ml/kg/min',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -514,9 +509,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '8.47 km',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -538,9 +533,9 @@ class _HomeState extends State<Home> {
                                         child: Text(
                                           '8604 steps',
                                           style: TextStyle(
-                                            fontFamily: 'Readex Pro',
+                                            color: Color(0xFF14181B),
+                                            fontWeight: FontWeight.w500,
                                             fontSize: 18,
-                                            letterSpacing: 0,
                                           ),
                                         ),
                                       ),
@@ -560,9 +555,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '727 kcal',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -581,9 +576,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '28 m',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -603,13 +598,6 @@ class _HomeState extends State<Home> {
                         child: Text(
                           'Heart Rate Training Zones',
                           textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontFamily: 'Plus Jakarta Sans',
-                            color: Color(0xFF57636C),
-                            fontSize: 14,
-                            letterSpacing: 0,
-                            fontWeight: FontWeight.w500,
-                          ),
                         ),
                       ),
                       Row(
@@ -625,33 +613,41 @@ class _HomeState extends State<Home> {
                         thickness: 1,
                         color: Color(0xFFE0E3E7),
                       ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
-                        child: TextButton(
-                          onPressed: () {
-                            print('Button pressed ...');
-                          },
-                          child: Text(
-                            'Simulate session',
-                            style: TextStyle(
-                              fontFamily: 'Plus Jakarta Sans',
-                              color: Color(0xFF14181B),
-                              fontSize: 16,
-                              letterSpacing: 0,
-                              fontWeight: FontWeight.w500,
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 248, 248, 248),
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 20, 24, 27),
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Simulate session',
+                                    style: TextStyle(
+                                      fontFamily: 'Plus Jakarta Sans',
+                                      color: Color(0xFF14181B),
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(),
+                                ),
+                              ),
                             ),
                           ),
-                          style: ButtonStyle(
-                            /*minimumSize: Size(double.infinity, 40),
-                            maximumSize: Size(double.infinity, 40),
-                            backgroundColor: Colors.white,
-                            borderSide: BorderSide(
-                              color: Color(0xFFE0E3E7),
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(40),*/
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -691,7 +687,7 @@ class _HomeState extends State<Home> {
                               padding: EdgeInsets.all(8),
                               child: FaIcon(
                                 FontAwesomeIcons.biking,
-                                color: Color(0xFF107CFF),
+                                color: Colors.blue,
                                 size: 26,
                               ),
                             ),
@@ -699,9 +695,9 @@ class _HomeState extends State<Home> {
                               '16:25 - Bike (auto)',
                               textAlign: TextAlign.start,
                               style: TextStyle(
-                                fontFamily: 'Outfit',
+                                color: Color(0xFF14181B),
+                                fontWeight: FontWeight.bold,
                                 fontSize: 24,
-                                letterSpacing: 0,
                               ),
                             ),
                           ],
@@ -721,8 +717,8 @@ class _HomeState extends State<Home> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Icon(
-                                      Icons.timer_sharp,
-                                      color: Color(0xFFEC740A),
+                                      Icons.timer_outlined,
+                                      color: Color(0xFFFF8A2C),
                                       size: 24,
                                     ),
                                     Padding(
@@ -730,9 +726,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '04:52:31',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -743,7 +739,7 @@ class _HomeState extends State<Home> {
                                   children: [
                                     Icon(
                                       Icons.speed_outlined,
-                                      color: Color.fromARGB(255, 20, 24, 27),
+                                      color: Color(0xFF118D4F),
                                       size: 24,
                                     ),
                                     Padding(
@@ -751,9 +747,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '28.73 km/h',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -772,9 +768,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '150 bpm',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -791,7 +787,7 @@ class _HomeState extends State<Home> {
                                   children: [
                                     Icon(
                                       Icons.outlined_flag_rounded,
-                                      color: Color.fromARGB(255, 20, 24, 27),
+                                      color: Color(0xFF6800FF),
                                       size: 24,
                                     ),
                                     Padding(
@@ -799,9 +795,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '140.14 km',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -811,8 +807,8 @@ class _HomeState extends State<Home> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Icon(
-                                      Icons.settings_outlined,
-                                      color: Color.fromARGB(255, 20, 24, 27),
+                                      Icons.trending_up_rounded,
+                                      color: Color(0xFEF0C500),
                                       size: 24,
                                     ),
                                     Padding(
@@ -820,9 +816,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '664 m',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -841,9 +837,9 @@ class _HomeState extends State<Home> {
                                       child: Text(
                                         '3893 kcal',
                                         style: TextStyle(
-                                          fontFamily: 'Readex Pro',
+                                          color: Color(0xFF14181B),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
-                                          letterSpacing: 0,
                                         ),
                                       ),
                                     ),
@@ -863,13 +859,6 @@ class _HomeState extends State<Home> {
                         child: Text(
                           'Heart Rate Training Zones',
                           textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontFamily: 'Plus Jakarta Sans',
-                            color: Color(0xFF57636C),
-                            fontSize: 14,
-                            letterSpacing: 0,
-                            fontWeight: FontWeight.w500,
-                          ),
                         ),
                       ),
                       Row(
@@ -885,33 +874,41 @@ class _HomeState extends State<Home> {
                         thickness: 1,
                         color: Color(0xFFE0E3E7),
                       ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
-                        child: TextButton(
-                          onPressed: () {
-                            print('Button pressed ...');
-                          },
-                          child: Text(
-                            'Simulate session',
-                            style: TextStyle(
-                              fontFamily: 'Plus Jakarta Sans',
-                              color: Color(0xFF14181B),
-                              fontSize: 16,
-                              letterSpacing: 0,
-                              fontWeight: FontWeight.w500,
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 248, 248, 248),
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 20, 24, 27),
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Simulate session',
+                                    style: TextStyle(
+                                      fontFamily: 'Plus Jakarta Sans',
+                                      color: Color(0xFF14181B),
+                                      fontSize: 16,
+                                      letterSpacing: 0,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(),
+                                ),
+                              ),
                             ),
                           ),
-                          style: ButtonStyle(
-                            /*minimumSize: Size(double.infinity, 40),
-                            maximumSize: Size(double.infinity, 40),
-                            backgroundColor: Colors.white,
-                            borderSide: BorderSide(
-                              color: Color(0xFFE0E3E7),
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(40),*/
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -921,6 +918,7 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
+      drawer: NavDrawer(),
     );
   }
 }
