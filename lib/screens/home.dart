@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simfit/navigation/navtools.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 class Home extends StatefulWidget {
@@ -14,7 +15,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // Define any necessary state variables here
+  final TextEditingController dateBirthController = TextEditingController();
+
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -22,13 +25,28 @@ class _HomeState extends State<Home> {
     // Initialize state variables if necessary
   }
 
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1970, 1),
+      lastDate: DateTime(2024, 12),
+    );
+    if (picked != null && picked != selectedDate) {
+      controller.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text('SimFit',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        title: Text(
+          'SimFit',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -57,20 +75,35 @@ class _HomeState extends State<Home> {
                         color: Color.fromARGB(255, 20, 24, 27),
                         size: 30,
                       ),
-                      onPressed: () {},
+                      onPressed: () => selectedDate =
+                          selectedDate.subtract(Duration(days: 1)),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Text(
-                      '12-06-2023',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF14181B),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24,
+                    padding: EdgeInsetsDirectional.fromSTEB(24, 4, 24, 0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 248, 248, 248),
+                        border: Border.all(
+                          color: Color.fromARGB(255, 20, 24, 27),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: TextButton(
+                        onPressed: () =>
+                            _selectDate(context, dateBirthController),
+                        child: Text(
+                          selectedDate.toString(),
+                          style: TextStyle(
+                            color: Color(0xFF14181B),
+                            fontSize: 16,
+                            letterSpacing: 0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -92,7 +125,8 @@ class _HomeState extends State<Home> {
                         color: Color.fromARGB(255, 20, 24, 27),
                         size: 30,
                       ),
-                      onPressed: () {},
+                      onPressed: () =>
+                          selectedDate = selectedDate.add(Duration(days: 1)),
                     ),
                   ),
                 ),
@@ -635,14 +669,12 @@ class _HomeState extends State<Home> {
                                   child: Text(
                                     'Simulate session',
                                     style: TextStyle(
-                                      fontFamily: 'Plus Jakarta Sans',
                                       color: Color(0xFF14181B),
                                       fontSize: 16,
                                       letterSpacing: 0,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  style: ButtonStyle(),
                                 ),
                               ),
                             ),
@@ -896,14 +928,12 @@ class _HomeState extends State<Home> {
                                   child: Text(
                                     'Simulate session',
                                     style: TextStyle(
-                                      fontFamily: 'Plus Jakarta Sans',
                                       color: Color(0xFF14181B),
                                       fontSize: 16,
                                       letterSpacing: 0,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  style: ButtonStyle(),
                                 ),
                               ),
                             ),
