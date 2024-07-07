@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simfit/providers/user_provider.dart';
+import 'package:simfit/providers/home_provider.dart';
 import 'package:simfit/screens/splash.dart';
 
 void main() {
@@ -17,19 +18,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          background: const Color(0xFFFFFFFF),
-          primary: const Color(0xFF07389e),
-          secondary: const Color(0xFFFFFFFF),
-          seedColor: const Color(0xFF07389e),
+    return ChangeNotifierProvider(
+      create: (context) => HomeProvider(),
+      builder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            background: const Color(0xFFFFFFFF),
+            primary: const Color(0xFF07389e),
+            secondary: const Color(0xFFFFFFFF),
+            seedColor: const Color(0xFF07389e),
+          ),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
+        home: const Splash(),
       ),
-      home: const Splash(),
     );
   }
 }
