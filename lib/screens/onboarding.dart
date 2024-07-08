@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:simfit/screens/login.dart';
+import 'package:simfit/screens/info.dart';
 
 class OnBoarding extends StatelessWidget {
   const OnBoarding({Key? key}) : super(key: key); // ({super.key});
@@ -23,8 +24,8 @@ class OnBoarding extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      /*trailing: Text(
-        'Login',
+      trailing: Text(
+        'Learn more about mesocycle',
         style: TextStyle(
           fontSize: 16,
           color:  Colors.blue,
@@ -32,8 +33,8 @@ class OnBoarding extends StatelessWidget {
         ),
       ),
       trailingFunction: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: ((context) => const Login())));
-      },*/
+        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => const Info())));
+      },
       controllerColor:  Colors.blue,
       totalPage: 3,
       headerBackgroundColor: Colors.white,
@@ -149,7 +150,7 @@ class OnBoarding extends StatelessWidget {
                 height: 20,
               ),
               const Text(
-                'Improve your performance by planning the trainings',
+                'Improve your performance by planning the trainings with mesocycles',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
