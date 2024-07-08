@@ -15,20 +15,13 @@ class HomeProvider extends ChangeNotifier {
   dynamic dailyRestHR = 0;
   List<Activity> dailyActivities = [];
 
-  DateTime showDate = DateTime.now().subtract(const Duration(days: 1));
-
   final Impact impact = Impact();
 
   void getDataOfDay(DateTime showDate) async {
     showDate = DateUtils.dateOnly(showDate);
 
-    _loading();
-
     dailySteps = await impact.getStepsFromDay(showDate);
     totDailySteps = getTotalStepsFromDay(dailySteps);
-    if (totDailyCalories == 0) {
-
-    }
 
     dailyCalories = await impact.getCaloriesFromDay(showDate);
     totDailyCalories = getTotalCaloriesFromDay(dailyCalories);
@@ -40,15 +33,6 @@ class HomeProvider extends ChangeNotifier {
 
     dailyActivities = await impact.getActivitiesFromDay(showDate);
 
-    notifyListeners();
-  }
-
-  void _loading() {
-    dailySteps = [];
-    dailyCalories = [];
-    dailySleep = [];
-    dailyRestHR = 0;
-    dailyActivities = [];
     notifyListeners();
   }
 }

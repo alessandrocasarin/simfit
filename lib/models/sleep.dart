@@ -16,7 +16,7 @@ class Sleep {
       : day = DateFormat('yyyy-MM-dd').parse(date),
         duration = Duration(milliseconds: (json["duration"] ?? 0).toInt()),
         efficiency = (json["efficiency"] ?? 0).toInt(),
-        mainSleep = (json["mainSleep"] ?? false).toBool();
+        mainSleep = json["mainSleep"] ?? false;
 }
 
 Duration getMainSleepFromDay(List<Sleep> dataSleep) {

@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:simfit/models/activity.dart';
 import 'package:simfit/navigation/navtools.dart';
-import 'package:provider/provider.dart';
 import 'package:simfit/providers/home_provider.dart';
 
 class Home extends StatefulWidget {
@@ -18,26 +17,325 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  DateTime selectedDate = DateTime.now().subtract(const Duration(days: 1));
+
   @override
   void initState() {
     super.initState();
     Provider.of<HomeProvider>(context, listen: false)
-        .getDataOfDay(DateTime.now().subtract(const Duration(days: 1)));
+        .getDataOfDay(DateTime.now());
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final provider = Provider.of<HomeProvider>(context, listen: false);
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: provider.showDate,
-      firstDate: DateTime(1970, 1),
-      lastDate: DateTime(2024, 12),
+      initialDate: selectedDate,
+      firstDate: DateTime(2000, 1),
+      lastDate: DateTime(2100, 12),
     );
-    if (picked != null && picked != provider.showDate) {
-      provider.showDate = picked;
+    if (picked != null && picked != selectedDate) {
+      selectedDate = picked;
     }
   }
-  
+
+  Widget TrainingSessionRecap({required Activity activity}) {
+    DateFormat formatter = DateFormat('HH:mm');
+
+    DateTime startingTime = activity.startingTime;
+    String activityName = activity.activityName;
+    Duration duration = activity.duration;
+    double avgSpeed = activity.avgSpeed;
+    int avgHR = activity.avgHR;
+    double vo2Max = activity.vo2Max;
+    double distance = activity.distance;
+    int steps = activity.steps;
+    int calories = activity.calories;
+    double elevationGain = activity.elevationGain;
+    List<HRZone> zonesHR = activity.zonesHR;
+
+    IconData trainingIcon = FontAwesomeIcons.dumbbell;
+    switch (activityName) {
+      case 'Corsa':
+        trainingIcon = FontAwesomeIcons.personRunning;
+        break;
+      case 'Bici':
+        trainingIcon = FontAwesomeIcons.personBiking;
+        break;
+      case 'Camminata':
+        trainingIcon = FontAwesomeIcons.personWalking;
+        break;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        width: 300,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 4,
+              color: Color(0x33000000),
+              offset: Offset(
+                0,
+                2,
+              ),
+            )
+          ],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: FaIcon(
+                        trainingIcon,
+                        color: Colors.blue,
+                        size: 26,
+                      ),
+                    ),
+                    Text(
+                      '${formatter.format(startingTime)} - $activityName',
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                        color: Color(0xFF14181B),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.timer_outlined,
+                              color: Color(0xFFFF8A2C),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.speed_outlined,
+                              color: Color(0xFF118D4F),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '${avgSpeed.toStringAsFixed(2)} km/h',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.favorite_border_rounded,
+                              color: Color(0xFFFF0000),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '$avgHR bpm',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.air_outlined,
+                              color: Color(0xFF08D3FF),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '${vo2Max.toStringAsFixed(1)} ml/kg/min',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.outlined_flag_rounded,
+                              color: Color(0xFF6800FF),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '${distance.toStringAsFixed(2)} km',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.shoePrints,
+                              color: Color(0xFF28DA32),
+                              size: 16,
+                            ),
+                            Align(
+                              alignment: const AlignmentDirectional(-1, 0),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    8, 4, 4, 4),
+                                child: Text(
+                                  '$steps steps',
+                                  style: const TextStyle(
+                                    color: Color(0xFF14181B),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.local_fire_department_outlined,
+                              color: Color(0xFFF024F0),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '$calories kcal',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Icon(
+                              Icons.trending_up_rounded,
+                              color: Color(0xFEF0C500),
+                              size: 24,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text(
+                                '${elevationGain.toStringAsFixed(0)} m',
+                                style: const TextStyle(
+                                  color: Color(0xFF14181B),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(
+                thickness: 1,
+                color: Color(0xFFE0E3E7),
+              ),
+              const Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(12, 4, 0, 8),
+                child: Text(
+                  'Heart Rate Training Zones',
+                  textAlign: TextAlign.start,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Transform.rotate(
+                    angle: 90 * (math.pi / 180),
+                  ), // child of Transform.rotate will be the bar graph with the HT training zones
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,8 +376,9 @@ class _HomeState extends State<Home> {
                             size: 30,
                           ),
                           onPressed: () {
-                            provider.getDataOfDay(provider.showDate
-                                .subtract(const Duration(days: 1)));
+                            selectedDate =
+                                selectedDate.subtract(const Duration(days: 1));
+                            provider.getDataOfDay(selectedDate);
                           },
                         ),
                       ),
@@ -100,14 +399,13 @@ class _HomeState extends State<Home> {
                           child: TextButton(
                             onPressed: () async {
                               await _selectDate(context);
-                              provider.getDataOfDay(provider.showDate);
+                              provider.getDataOfDay(selectedDate);
                             },
                             child: Text(
-                              DateFormat('EEE, d MMM')
-                                  .format(provider.showDate),
+                              DateFormat('EEE, d MMM').format(selectedDate),
                               style: const TextStyle(
                                 color: Color(0xFF14181B),
-                                fontSize: 16,
+                                fontSize: 24,
                                 letterSpacing: 0,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -134,8 +432,9 @@ class _HomeState extends State<Home> {
                             size: 30,
                           ),
                           onPressed: () {
-                            provider.getDataOfDay(
-                                provider.showDate.add(const Duration(days: 1)));
+                            selectedDate =
+                                selectedDate.add(const Duration(days: 1));
+                            provider.getDataOfDay(selectedDate);
                           },
                         ),
                       ),
@@ -390,582 +689,26 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-                ), 
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          blurRadius: 4,
-                          color: Color(0x33000000),
-                          offset: Offset(
-                            0,
-                            2,
-                          ),
-                        )
-                      ],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 12),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: FaIcon(
-                                    FontAwesomeIcons.personRunning,
-                                    color: Colors.blue,
-                                    size: 26,
-                                  ),
-                                ),
-                                Text(
-                                  '7:30 - Run (manual)',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    color: Color(0xFF14181B),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.timer_outlined,
-                                          color: Color(0xFFFF8A2C),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '00:53:49',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.speed_outlined,
-                                          color: Color(0xFF118D4F),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '9.50 km/h',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.favorite_border_rounded,
-                                          color: Color(0xFFFF0000),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '143 bpm',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.air_outlined,
-                                          color: Color(0xFF08D3FF),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '48.8 ml/kg/min',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.outlined_flag_rounded,
-                                          color: Color(0xFF6800FF),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '8.47 km',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        FaIcon(
-                                          FontAwesomeIcons.shoePrints,
-                                          color: Color(0xFF28DA32),
-                                          size: 16,
-                                        ),
-                                        Align(
-                                          alignment:
-                                              AlignmentDirectional(-1, 0),
-                                          child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    8, 4, 4, 4),
-                                            child: Text(
-                                              '8604 steps',
-                                              style: TextStyle(
-                                                color: Color(0xFF14181B),
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.local_fire_department_outlined,
-                                          color: Color(0xFFF024F0),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '727 kcal',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.trending_up_rounded,
-                                          color: Color(0xFEF0C500),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '28 m',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E3E7),
-                          ),
-                          const Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(12, 4, 0, 8),
-                            child: Text(
-                              'Heart Rate Training Zones',
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Transform.rotate(
-                                angle: 90 * (math.pi / 180),
-                              ),
-                            ],
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E3E7),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      24, 4, 24, 0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 248, 248, 248),
-                                      border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 20, 24, 27),
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: () {},
-                                      child: const Text(
-                                        'Simulate session',
-                                        style: TextStyle(
-                                          color: Color(0xFF14181B),
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                ),
+                if (provider.dailyActivities.isNotEmpty)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      provider.dailyActivities.length,
+                      (index) => TrainingSessionRecap(
+                        activity: provider.dailyActivities[index],
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          blurRadius: 4,
-                          color: Color(0x33000000),
-                          offset: Offset(
-                            0,
-                            2,
-                          ),
-                        )
-                      ],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 12),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: FaIcon(
-                                    FontAwesomeIcons.personBiking,
-                                    color: Colors.blue,
-                                    size: 26,
-                                  ),
-                                ),
-                                Text(
-                                  '16:25 - Bike (auto)',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    color: Color(0xFF14181B),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.timer_outlined,
-                                          color: Color(0xFFFF8A2C),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '04:52:31',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.speed_outlined,
-                                          color: Color(0xFF118D4F),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '28.73 km/h',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.favorite_border_rounded,
-                                          color: Color(0xFFFF0000),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '150 bpm',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.outlined_flag_rounded,
-                                          color: Color(0xFF6800FF),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '140.14 km',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.trending_up_rounded,
-                                          color: Color(0xFEF0C500),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '664 m',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Icon(
-                                          Icons.local_fire_department_outlined,
-                                          color: Color(0xFFF024F0),
-                                          size: 24,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            '3893 kcal',
-                                            style: TextStyle(
-                                              color: Color(0xFF14181B),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E3E7),
-                          ),
-                          const Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(12, 4, 0, 8),
-                            child: Text(
-                              'Heart Rate Training Zones',
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Transform.rotate(
-                                angle: 90 * (math.pi / 180),
-                              ),
-                            ],
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color(0xFFE0E3E7),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      24, 4, 24, 0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 248, 248, 248),
-                                      border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 20, 24, 27),
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: TextButton(
-                                      onPressed: () {},
-                                      child: const Text(
-                                        'Simulate session',
-                                        style: TextStyle(
-                                          color: Color(0xFF14181B),
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                  )
+                else
+                  const Text(
+                    'No training session recorded.',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 126, 127, 129),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 22,
                     ),
                   ),
-                ),
               ],
             );
           },
