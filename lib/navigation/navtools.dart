@@ -9,6 +9,7 @@ import 'package:profile_photo/profile_photo.dart';
 import 'package:simfit/screens/info.dart';
 import 'package:simfit/screens/settings.dart';
 import 'package:simfit/screens/training.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -140,6 +141,11 @@ class NavDrawer extends StatelessWidget {
   }
 
   void _toLoginPage(BuildContext context) async {
+    final sp=await SharedPreferences.getInstance();
+    await sp.remove("username");
+    await sp.remove("password");
+    await sp.remove("access");
+    await sp.remove("refresh");
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: ((context) => const Login())),
     );
