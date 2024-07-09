@@ -29,6 +29,7 @@ class Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 3), () => _checkLogin(context));
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -43,8 +44,11 @@ class Splash extends StatelessWidget {
                     'assets/simfit-logo.png',
                     scale: 4,
                   ),
-                  SizedBox(height: 10),
-                  const CircularProgressIndicator.adaptive(),
+                  const SizedBox(height: 10),
+                  CircularProgressIndicator(
+                    strokeWidth: 5,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ],
               ),
             ),

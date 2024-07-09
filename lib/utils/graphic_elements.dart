@@ -43,12 +43,6 @@ class CustomPlot extends StatelessWidget {
 
     double intervalY = ((maxY.abs() + minY.abs()) / 100).ceil() * 10.toDouble();
 
-    final legendItems = {
-      'ACL': Colors.red,
-      'CTL': Colors.blue,
-      'TSB': Colors.green,
-    };
-
     return Stack(
       children: [
         LineChart(
@@ -57,7 +51,7 @@ class CustomPlot extends StatelessWidget {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 40,
+                  reservedSize: 30,
                   interval: intervalX,
                   getTitlesWidget: (value, meta) {
                     DateTime date =
@@ -81,7 +75,7 @@ class CustomPlot extends StatelessWidget {
                       axisSide: meta.axisSide,
                       angle: -pi / 5,
                       child: Text(
-                        '${date.day}/${date.month}',
+                        '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}',
                         style: TextStyle(fontSize: 12),
                         textAlign: TextAlign.center,
                       ),
@@ -93,7 +87,7 @@ class CustomPlot extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   interval: intervalY,
-                  reservedSize: 40,
+                  reservedSize: 30,
                   getTitlesWidget: (value, meta) {
                     return SideTitleWidget(
                       axisSide: meta.axisSide,
@@ -106,51 +100,50 @@ class CustomPlot extends StatelessWidget {
                   },
                 ),
               ),
-              topTitles: AxisTitles(
+              topTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
-              rightTitles: AxisTitles(
+              rightTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
             ),
-            gridData: FlGridData(show: false),
+            gridData: FlGridData(
+              drawVerticalLine: false,
+              drawHorizontalLine: true,
+              horizontalInterval: intervalY,
+            ),
             borderData: FlBorderData(show: true),
             clipData:
                 FlClipData(top: true, bottom: true, left: false, right: false),
             lineBarsData: [
               _buildLineChartBarData('ACL', Colors.red),
               _buildLineChartBarData('CTL', Colors.blue),
-              _buildLineChartBarData('TSB', Colors.green),
+              _buildLineChartBarData('TSB', Colors.deepPurple),
             ],
             minY: minY,
             maxY: maxY,
             lineTouchData: LineTouchData(
-                enabled: true,
-                handleBuiltInTouches: true,
-                touchCallback:
-                    (FlTouchEvent event, LineTouchResponse? response) {
-                  if (event is FlTapUpEvent) {
-                    if (response != null && response.lineBarSpots != null) {
-                      final spot = response.lineBarSpots!.first;
-                      final DateTime date =
-                          DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
-                      scoreProvider.setNewScoresOfDay(date, scores[date]!);
-                    }
+              enabled: true,
+              handleBuiltInTouches: true,
+              touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+                if (event is FlTapUpEvent || event is FlLongPressEnd) {
+                  if (response != null && response.lineBarSpots != null) {
+                    final spot = response.lineBarSpots!.first;
+                    final DateTime date =
+                        DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
+                    scoreProvider.setNewScoresOfDay(date, scores[date]!);
                   }
-                },
-                touchTooltipData:
-                    LineTouchTooltipData(getTooltipItems: (touchedSpots) {
+                }
+              },
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipItems: (touchedSpots) {
                   return touchedSpots.map((touchedSpot) {
                     return null;
                   }).toList();
-                })),
+                },
+              ),
+            ),
           ),
-        ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: ChartLegend(legendItems: legendItems),
         ),
       ],
     );
@@ -177,29 +170,59 @@ class CustomPlot extends StatelessWidget {
   }
 }
 
-class ChartLegend extends StatelessWidget {
-  final Map<String, Color> legendItems;
+class TRIMPDisplay extends StatelessWidget {
+  final double index;
 
-  ChartLegend({required this.legendItems});
+  TRIMPDisplay({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: legendItems.entries.map((entry) {
-        return Row(
+    String badgeText = '';
+    Color badgeColor = Colors.green;
+
+    // Determine the badge text and color based on the TRIMP value
+    if (index < 50) {
+      badgeText = 'Easy';
+      badgeColor = Colors.green;
+    } else if (index < 120) {
+      badgeText = 'Moderate';
+      badgeColor = Colors.orange;
+    } else if (index < 250) {
+      badgeText = 'Hard';
+      badgeColor = Colors.red;
+    } else {
+      badgeText = 'Very hard';
+      badgeColor = Colors.black;
+    }
+
+    return Container(
+      padding: EdgeInsets.all(5.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 12,
-              height: 12,
-              color: entry.value,
-              margin: EdgeInsets.only(right: 4),
+            Text(
+              'TRIMP: ${double.parse((index).toStringAsFixed(2))}',
+              style: TextStyle(fontSize: 18),
             ),
-            Text(entry.key),
-            SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: badgeColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                badgeText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
-        );
-      }).toList(),
+        ),
+      ),
     );
   }
 }

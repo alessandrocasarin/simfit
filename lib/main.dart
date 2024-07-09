@@ -22,10 +22,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          background: const Color(0xFFFFFFFF),
-          primary: const Color(0xFF07389e),
-          secondary: const Color(0xFFFFFFFF),
-          seedColor: const Color(0xFF07389e),
+          primary: Colors.blue,
+          secondary: Colors.white,
+          seedColor: Colors.blue,
         ),
         useMaterial3: true,
       ),

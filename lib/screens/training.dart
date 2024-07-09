@@ -7,7 +7,7 @@ import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/screens/simulation.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/utils/algorithm.dart';
-import 'package:simfit/utils/custom_plot.dart';
+import 'package:simfit/utils/graphic_elements.dart';
 
 class Training extends StatefulWidget {
   static const routename = 'Training';
@@ -39,7 +39,9 @@ class _TrainingState extends State<Training> {
       // Fetch activities and restHR based on userProvider data
       final Map<DateTime, List<Activity>> activities =
           await impact.getActivitiesFromDateRange(
-        _userProvider.mesocycleStartDate ?? DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 30))),
+        _userProvider.mesocycleStartDate ??
+            DateUtils.dateOnly(
+                DateTime.now().subtract(const Duration(days: 30))),
         showDate,
       );
       final double restHR = await impact.getRestHRFromDay(showDate);
@@ -57,14 +59,35 @@ class _TrainingState extends State<Training> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Training Page'),
+        title: const Text(
+          'Training Load',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
         centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Theme.of(context).secondaryHeaderColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: IconButton(
+              icon: Icon(Icons.info_outline_rounded,
+                  color: Theme.of(context).secondaryHeaderColor, size: 28),
+              tooltip: 'Info Page',
+              onPressed: () {},
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _fetchDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 5,
+                color: Theme.of(context).primaryColor,
+              ),
+            );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -79,13 +102,17 @@ class _TrainingState extends State<Training> {
               age: _userProvider.age ?? 0,
               rHR: restHR,
               mesoLen: _userProvider.mesocycleLength ?? 42,
-              daysFromMesoStart: showDate.difference(_userProvider.mesocycleStartDate ?? DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 30))))
-                      .inDays + 1,
+              daysFromMesoStart: showDate
+                      .difference(_userProvider.mesocycleStartDate ??
+                          DateUtils.dateOnly(DateTime.now()
+                              .subtract(const Duration(days: 30))))
+                      .inDays +
+                  1,
             );
             Map<DateTime, Map<String, double>> mesocycleScores =
                 algorithm.computeScoresOfMesocycle(showDate, activities);
 
-            scoreProvider = ScoreProvider(
+            ScoreProvider scoreProvider = ScoreProvider(
               day: showDate,
               scoresOfDay: mesocycleScores[showDate]!,
             );
@@ -96,47 +123,81 @@ class _TrainingState extends State<Training> {
                   create: (context) => scoreProvider,
                   builder: (context, child) => Column(
                     children: [
-                      TRIMPDisplay(
-                        index: (mesocycleScores[showDate]?['TRIMP'] ?? 0.0),
-                      ),
                       PlotContainer(
                         scores: mesocycleScores,
                         scoreProvider: scoreProvider,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Consumer<ScoreProvider>(
                         builder: (context, provider, child) {
                           return Column(
                             children: [
                               Text(
-                                'Date: ${provider.day.day}/${provider.day.month}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                'Training scores of ${provider.day.day.toString().padLeft(2, '0')}/${provider.day.month.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              TRIMPDisplay(
+                                index: (provider.scoresOfDay['TRIMP']!),
                               ),
                               Text(
                                 'Acute Training Load: ${(provider.scoresOfDay['ACL']!).toStringAsFixed(2)}',
-                                style: TextStyle(color: Colors.red),
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18,
+                                ),
                               ),
                               Text(
                                 'Chronic Training Load: ${(provider.scoresOfDay['CTL']!).toStringAsFixed(2)}',
-                                style: TextStyle(color: Colors.blue),
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18,
+                                ),
                               ),
                               Text(
                                 'Training Stress Balance: ${(provider.scoresOfDay['TSB']!).toStringAsFixed(2)}',
-                                style: TextStyle(color: Colors.green),
+                                style: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 18,
+                                ),
                               ),
                             ],
                           );
                         },
                       ),
-                      const SizedBox(height: 20),
+                      /*const Padding(
+                        padding: EdgeInsets.only(
+                            top: 20, bottom: 10, left: 20, right: 20),
+                        child: Text(
+                          "Simulate today's training and find out how your performance would vary.",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ),*/
+                      SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () => _toSimulationPage(
                           context,
                           mesocycleScores,
                           algorithm,
                         ),
-                        child: Text('RUN SIMULATION'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context)
+                              .primaryColor, // background color
+                          foregroundColor: Theme.of(context)
+                              .secondaryHeaderColor, // text color
+                        ),
+                        child: const Text(
+                          'SIMULATE TRAINING',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
+                      SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -176,77 +237,89 @@ class PlotContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+
     if (scores.length == 1) {
       return Container();
     } else {
       return Container(
-        width: 0.8 * screenWidth,
-        height: 0.5 * screenHeight,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: CustomPlot(
-            scores: scores,
-            scoreProvider: scoreProvider,
-          ),
-        ),
-      );
-    }
-  }
-}
-
-class TRIMPDisplay extends StatelessWidget {
-  final double index;
-
-  TRIMPDisplay({Key? key, required this.index}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    String badgeText = '';
-    Color badgeColor = Colors.green;
-
-    // Determine the badge text and color based on the index
-    if (index < 50) {
-      badgeText = 'Easy';
-      badgeColor = Colors.green;
-    } else if (index < 120) {
-      badgeText = 'Moderate';
-      badgeColor = Colors.orange;
-    } else if (index < 250) {
-      badgeText = 'Hard';
-      badgeColor = Colors.red;
-    } else {
-      badgeText = 'Very hard';
-      badgeColor = Colors.black;
-    }
-
-    return Container(
-      margin: EdgeInsets.all(20.0),
-      child: Center(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Yesterday training load: TRIMP=${double.parse((index).toStringAsFixed(2))}',
-              style: TextStyle(fontSize: 20),
-            ),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: badgeColor,
-                borderRadius: BorderRadius.circular(20),
+            const Padding(
+              padding:
+                  EdgeInsets.only(top: 20, bottom: 14, left: 20, right: 20),
+              child: Center(
+                child: Text(
+                  'Plot of the training load and performance',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  color: Colors.red,
+                  margin: EdgeInsets.only(right: 4),
+                ),
+                Text(
+                  'ACL',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(width: 10),
+                Container(
+                  width: 12,
+                  height: 12,
+                  color: Colors.blue,
+                  margin: EdgeInsets.only(right: 4),
+                ),
+                Text(
+                  'CTL',
+                  style: TextStyle(fontSize: 14),
+                ),
+                SizedBox(width: 10),
+                Container(
+                  width: 12,
+                  height: 12,
+                  color: Colors.deepPurple,
+                  margin: EdgeInsets.only(right: 4),
+                ),
+                Text(
+                  'TSB',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+            Container(
+              width: 0.9 * screenWidth,
+              height: 0.4 * screenHeight,
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: 10, bottom: 10, right: 10, left: 0),
+                child: CustomPlot(
+                  scores: scores,
+                  scoreProvider: scoreProvider,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Text(
-                badgeText,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                'Click on data points in the chart to display their values below.',
+                style: TextStyle(fontSize: 12),
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
 }
