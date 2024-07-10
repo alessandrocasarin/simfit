@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/screens/home.dart';
 import 'package:simfit/screens/login.dart';
@@ -11,6 +12,8 @@ import 'package:simfit/screens/settings.dart';
 import 'package:simfit/screens/training.dart';
 
 class NavDrawer extends StatelessWidget {
+  const NavDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
@@ -22,7 +25,7 @@ class NavDrawer extends StatelessWidget {
             width: double.infinity,
             child: DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -32,15 +35,15 @@ class NavDrawer extends StatelessWidget {
                     'Hi ${(userProvider.name != null) ? userProvider.name : 'User'}!',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white,
+                      fontSize: 24,
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                     textAlign: TextAlign.left,
                   ),
                   ProfilePhoto(
-                    totalWidth: 100,
-                    cornerRadius: 100,
-                    color: Colors.white,
+                    totalWidth: 90,
+                    cornerRadius: 90,
+                    color: Theme.of(context).secondaryHeaderColor,
                     image: AssetImage(
                       userProvider.gender == 'female'
                           ? 'assets/female-avatar.png'
@@ -52,46 +55,39 @@ class NavDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            trailing:
-                const Icon(Icons.home_filled, color: Colors.black, size: 28),
-            title: const Text('Home',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            trailing: Icon(Icons.home_filled,
+                color: Theme.of(context).primaryColor, size: 30),
+            title: Text('Home',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).primaryColor)),
             onTap: () {
               _toHomePage(context);
             },
           ),
           ListTile(
-            trailing:
-                const Icon(Icons.account_circle, color: Colors.black, size: 28),
-            title: const Text('Profile',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            trailing: Icon(Icons.account_circle,
+                color: Theme.of(context).primaryColor, size: 30),
+            title: Text('Profile',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).primaryColor)),
             onTap: () {
               _toProfilePage(context);
             },
           ),
           ListTile(
-            trailing:
-                const Icon(Icons.trending_up, color: Colors.black, size: 28),
-            title: const Text('Training',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            trailing: Icon(Icons.trending_up,
+                color: Theme.of(context).primaryColor, size: 30),
+            title: Text('Training',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).primaryColor)),
             onTap: () {
               _toTrainingPage(context);
-            },
-          ),
-          ListTile(
-            trailing: const Icon(Icons.settings, color: Colors.black, size: 28),
-            title: const Text('Settings',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            onTap: () {
-              _toSettingPage(context);
-            },
-          ),
-          ListTile(
-            trailing: const Icon(Icons.info, color: Colors.black, size: 28),
-            title: const Text('Info',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            onTap: () {
-              _toInfoPage(context);
             },
           ),
           Spacer(),
@@ -103,21 +99,13 @@ class NavDrawer extends StatelessWidget {
                 onPressed: () async {
                   _toLoginPage(context);
                 },
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                    const EdgeInsets.symmetric(horizontal: 60, vertical: 10),
-                  ),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Theme.of(context).secondaryHeaderColor,
                 ),
-                child: Text(
+                child: const Text(
                   'LOG OUT',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -140,6 +128,11 @@ class NavDrawer extends StatelessWidget {
   }
 
   void _toLoginPage(BuildContext context) async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.remove('username');
+    await sp.remove('password');
+    await sp.remove('access');
+    await sp.remove('refresh');
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: ((context) => const Login())),
     );

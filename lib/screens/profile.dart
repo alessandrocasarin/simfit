@@ -53,7 +53,8 @@ class _ProfileState extends State<Profile> {
           ? DateFormat('yyyy-MM-dd').format(_userProvider.mesocycleStartDate!)
           : '';
       nameController.text = _userProvider.name ?? '';
-      durationMesoController.text = _userProvider.mesocycleLength?.toString() ?? '';
+      durationMesoController.text =
+          _userProvider.mesocycleLength?.toString() ?? '';
     });
   }
 
@@ -68,8 +69,14 @@ class _ProfileState extends State<Profile> {
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Information saved correctly!'),
+          content: Center(
+            child: Text(
+              'Information saved correctly!',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
         ),
       );
     }
@@ -84,30 +91,35 @@ class _ProfileState extends State<Profile> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, right: 8.0),
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 10,
+      ),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.blue.shade50,
+          fillColor: Theme.of(context).secondaryHeaderColor,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(100.0),
-            borderSide: const BorderSide(color: Colors.white, width: 1),
+            borderSide: const BorderSide(color: Colors.transparent, width: 1),
           ),
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(100.0)),
-            borderSide: BorderSide(color: Colors.white, width: 1),
+            borderSide: BorderSide(color: Colors.transparent, width: 1),
           ),
           focusedErrorBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(100.0)),
-            borderSide: BorderSide(color: Colors.white, width: 1),
+            borderSide: BorderSide(color: Colors.transparent, width: 1),
           ),
           errorBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(100.0)),
-            borderSide: BorderSide(color: Colors.white, width: 1),
+            borderSide: BorderSide(color: Colors.transparent, width: 1),
           ),
-          prefixIcon: Icon(icon, color: Colors.blue, size: 30),
+          prefixIcon:
+              Icon(icon, color: Theme.of(context).primaryColor, size: 30),
           hintText: hintText,
+          hintStyle: TextStyle(fontSize: 16),
         ),
         validator: validator,
         onTap: onTap,
@@ -119,216 +131,210 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Theme.of(context).secondaryHeaderColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Profile',
+                  SizedBox(height: 20),
+                  Text(
+                    'About you',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                      color: Colors.blue,
+                      fontSize: 20,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
-                  const Spacer(),
-                  ElevatedButton(
-                    onPressed: _saveUserInfo,
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 12),
-                      ),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
-                    ),
-                    child: const Text(
-                      'Save',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ),
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 15),
-                child: Text(
-                  'About you',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              _buildTextFormField(
-                controller: nameController,
-                hintText: 'Name',
-                icon: Icons.person,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Name is required';
-                  }
-                  if (value.length > 20) {
-                    return 'Name can have max 20 characters';
-                  }
-                  return null;
-                },
-              ),
-              _buildTextFormField(
-                controller: dateBirthController,
-                hintText: 'Date of Birth',
-                icon: Icons.calendar_month_outlined,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Date of Birth is required';
-                  }
-                  int year = int.parse(value.substring(0, 4));
-                  if (year < (DateTime.now().year - 100) ||
-                      year > (DateTime.now().year - 12)) {
-                    return 'Year of birth must be ${(DateTime.now().year - 100)} - ${(DateTime.now().year - 12)}';
-                  }
-                  return null;
-                },
-                onTap: () => _selectDate(context, dateBirthController),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20, right: 8.0),
-                child: Container(
-                  height: 65,
-                  child: DropdownButtonFormField(
-                    isDense: false,
-                    itemHeight: 50,
-                    value: _gender,
+                  _buildTextFormField(
+                    controller: nameController,
+                    hintText: 'Name',
+                    icon: Icons.person,
                     validator: (value) {
-                      if (value == null) {
-                        return 'Biological Sex is required';
+                      if (value == null || value.isEmpty) {
+                        return 'Name is required';
+                      }
+                      if (value.length > 20) {
+                        return 'Name can have max 20 characters';
                       }
                       return null;
                     },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.blue.shade50,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100.0),
-                        borderSide:
-                            const BorderSide(color: Colors.white, width: 1),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                        borderSide: BorderSide(color: Colors.white, width: 1),
-                      ),
-                      focusedErrorBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                        borderSide: BorderSide(color: Colors.white, width: 1),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(100.0)),
-                        borderSide: BorderSide(color: Colors.white, width: 1),
+                  ),
+                  _buildTextFormField(
+                    controller: dateBirthController,
+                    hintText: 'Date of Birth',
+                    icon: Icons.calendar_month_outlined,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Date of Birth is required';
+                      }
+                      int year = int.parse(value.substring(0, 4));
+                      if (year < (DateTime.now().year - 100) ||
+                          year > (DateTime.now().year - 12)) {
+                        return 'Year of birth must be from ${(DateTime.now().year - 100)} to ${(DateTime.now().year - 12)}';
+                      }
+                      return null;
+                    },
+                    onTap: () => _selectDate(context, dateBirthController),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
+                    ),
+                    child: Container(
+                      height: 65,
+                      child: DropdownButtonFormField(
+                        isDense: false,
+                        itemHeight: 50,
+                        value: _gender,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Biological sex is required';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).secondaryHeaderColor,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(100.0),
+                            borderSide: const BorderSide(
+                                color: Colors.transparent, width: 1),
+                          ),
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100.0)),
+                            borderSide:
+                                BorderSide(color: Colors.transparent, width: 1),
+                          ),
+                          focusedErrorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100.0)),
+                            borderSide:
+                                BorderSide(color: Colors.transparent, width: 1),
+                          ),
+                          errorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100.0)),
+                            borderSide:
+                                BorderSide(color: Colors.transparent, width: 1),
+                          ),
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'male',
+                            child: Row(
+                              children: [
+                                Icon(MdiIcons.genderMale,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 35),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 5),
+                                  child: Text(
+                                    'Male',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: 'female',
+                            child: Row(
+                              children: [
+                                Icon(MdiIcons.genderFemale,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 35),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 5),
+                                  child: Text(
+                                    'Female',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _gender = value ?? _gender;
+                          });
+                        },
                       ),
                     ),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'male',
-                        child: Row(
-                          children: [
-                            Icon(MdiIcons.genderMale,
-                                color: Colors.blue, size: 35),
-                            Text('  male',
-                                style:
-                                    TextStyle(fontWeight: FontWeight.normal)),
-                          ],
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: 'female',
-                        child: Row(
-                          children: [
-                            Icon(MdiIcons.genderFemale,
-                                color: Colors.blue, size: 35),
-                            Text('  female',
-                                style:
-                                    TextStyle(fontWeight: FontWeight.normal)),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _gender = value ?? _gender;
-                      });
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'About the training',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  _buildTextFormField(
+                    controller: durationMesoController,
+                    hintText: 'Mesocycle duration (days)',
+                    icon: Icons.av_timer,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Mesocycle duration is required';
+                      }
+                      int duration = int.parse(value);
+                      if (duration > 100 || duration < 14) {
+                        return 'Mesocycle duration must be from 14 to 100 days';
+                      }
+                      return null;
                     },
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.only(right: 20, top: 15),
-                child: Text(
-                  'About the training',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.blue,
+                  _buildTextFormField(
+                    controller: dateMesoController,
+                    hintText: 'Date of mesocycle start',
+                    icon: Icons.play_arrow_rounded,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Date of mesocycle start is required';
+                      }
+                      return null;
+                    },
+                    onTap: () => _selectDate(context, dateMesoController),
                   ),
-                ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _saveUserInfo,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Theme.of(context).secondaryHeaderColor,
+                      ),
+                      child: const Text(
+                        'SAVE',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                ],
               ),
-              _buildTextFormField(
-                controller: durationMesoController,
-                hintText: 'Mesocycle duration (days)',
-                icon: Icons.av_timer,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Mesocycle duration is required';
-                  }
-                  int duration = int.parse(value);
-                  if (duration > 100 || duration < 14) {
-                    return 'Mesocycle duration must be 14-100 days';
-                  }
-                  return null;
-                },
-              ),
-              _buildTextFormField(
-                controller: dateMesoController,
-                hintText: 'Date of mesocycle start',
-                icon: Icons.play_arrow_rounded,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Date of mesocycle start is required';
-                  }
-                  int duration = int.parse(durationMesoController.text);
-                  DateTime startDate = DateTime.parse(value);
-                  if (startDate.isAfter(
-                          DateTime.now().subtract(const Duration(days: 1))) ||
-                      startDate.isBefore(DateTime.now()
-                          .subtract(Duration(days: duration + 2)))) {
-                    String y = DateTime.now()
-                        .subtract(const Duration(days: 1))
-                        .toString()
-                        .substring(0, 10);
-                    String d = DateTime.now()
-                        .subtract(Duration(days: duration + 1))
-                        .toString()
-                        .substring(0, 10);
-                    return 'Must be from $d to $y';
-                  }
-                  return null;
-                },
-                onTap: () => _selectDate(context, dateMesoController),
-              ),
-            ],
+            ),
           ),
         ),
       ),

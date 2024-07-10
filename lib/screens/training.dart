@@ -12,15 +12,16 @@ import 'package:simfit/utils/graphic_elements.dart';
 class Training extends StatefulWidget {
   static const routename = 'Training';
 
+  const Training({super.key});
+
   @override
   _TrainingState createState() => _TrainingState();
 }
 
 class _TrainingState extends State<Training> {
-  final DateTime showDate =
-      DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1)));
   final Impact impact = Impact();
-  late ScoreProvider scoreProvider;
+
+  DateTime lastDate = DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1)));
   late Future<Map<String, dynamic>> _fetchDataFuture;
   late UserProvider _userProvider;
 
@@ -28,6 +29,12 @@ class _TrainingState extends State<Training> {
   void initState() {
     super.initState();
     _userProvider = Provider.of<UserProvider>(context, listen: false);
+    DateTime? endDate = _userProvider.mesocycleEndDate;
+    if (endDate != null) {
+      if (endDate.isBefore(DateUtils.dateOnly(DateTime.now()))) {
+        lastDate = endDate;
+      }
+    }
     _fetchDataFuture = _fetchData(context);
   }
 
@@ -42,9 +49,9 @@ class _TrainingState extends State<Training> {
         _userProvider.mesocycleStartDate ??
             DateUtils.dateOnly(
                 DateTime.now().subtract(const Duration(days: 30))),
-        showDate,
+        lastDate,
       );
-      final double restHR = await impact.getRestHRFromDay(showDate);
+      final double restHR = await impact.getRestHRFromDay(lastDate);
 
       return {
         'activities': activities,
@@ -102,7 +109,7 @@ class _TrainingState extends State<Training> {
               age: _userProvider.age ?? 0,
               rHR: restHR,
               mesoLen: _userProvider.mesocycleLength ?? 42,
-              daysFromMesoStart: showDate
+              daysFromMesoStart: lastDate
                       .difference(_userProvider.mesocycleStartDate ??
                           DateUtils.dateOnly(DateTime.now()
                               .subtract(const Duration(days: 30))))
@@ -110,11 +117,11 @@ class _TrainingState extends State<Training> {
                   1,
             );
             Map<DateTime, Map<String, double>> mesocycleScores =
-                algorithm.computeScoresOfMesocycle(showDate, activities);
+                algorithm.computeScoresOfMesocycle(lastDate, activities);
 
             ScoreProvider scoreProvider = ScoreProvider(
-              day: showDate,
-              scoresOfDay: mesocycleScores[showDate]!,
+              day: lastDate,
+              scoresOfDay: mesocycleScores[lastDate]!,
             );
 
             return SafeArea(
@@ -168,26 +175,38 @@ class _TrainingState extends State<Training> {
                           );
                         },
                       ),
-                      /*const Padding(
-                        padding: EdgeInsets.only(
-                            top: 20, bottom: 10, left: 20, right: 20),
-                        child: Text(
-                          "Simulate today's training and find out how your performance would vary.",
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),*/
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () => _toSimulationPage(
-                          context,
-                          mesocycleScores,
-                          algorithm,
-                        ),
+                        onPressed: () {
+                          if (lastDate.isBefore(DateUtils.dateOnly(
+                              DateTime.now().subtract(Duration(days: 1))))) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Center(
+                                  child: Text(
+                                    'Your mesocycle ended on ${lastDate.day.toString().padLeft(2, '0')}/${lastDate.month.toString().padLeft(2, '0')}!',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } else {
+                            _toSimulationPage(
+                              context,
+                              mesocycleScores,
+                              algorithm,
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context)
-                              .primaryColor, // background color
+                              .primaryColor,
                           foregroundColor: Theme.of(context)
-                              .secondaryHeaderColor, // text color
+                              .secondaryHeaderColor,
                         ),
                         child: const Text(
                           'SIMULATE TRAINING',
@@ -197,7 +216,7 @@ class _TrainingState extends State<Training> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

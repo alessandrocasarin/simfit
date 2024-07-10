@@ -22,9 +22,7 @@ class CustomPlot extends StatelessWidget {
 
     // Calculate interval for the x-axis
     double? intervalX;
-    if (scores.length < 6 && scores.length > 2) {
-      intervalX = (maxX - minX) / (scores.length);
-    } else if (scores.length >= 6) {
+    if (scores.length >= 6) {
       intervalX = (maxX - minX) / 4;
     }
 
@@ -43,34 +41,19 @@ class CustomPlot extends StatelessWidget {
 
     double intervalY = ((maxY.abs() + minY.abs()) / 100).ceil() * 10.toDouble();
 
-    return Stack(
-      children: [
-        LineChart(
-          LineChartData(
-            titlesData: FlTitlesData(
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 30,
-                  interval: intervalX,
-                  getTitlesWidget: (value, meta) {
-                    DateTime date =
-                        DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                    if (intervalX == null) {
-                      if (value == minX || value == maxX) {
-                        return SideTitleWidget(
-                          axisSide: meta.axisSide,
-                          angle: -pi / 5,
-                          child: Text(
-                            '${date.day}/${date.month}',
-                            style: TextStyle(fontSize: 12),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      } else {
-                        return Container();
-                      }
-                    }
+    return LineChart(
+      LineChartData(
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              interval: intervalX,
+              getTitlesWidget: (value, meta) {
+                DateTime date =
+                    DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                if (intervalX == null) {
+                  if (value == minX || value == maxX) {
                     return SideTitleWidget(
                       axisSide: meta.axisSide,
                       angle: -pi / 5,
@@ -80,72 +63,83 @@ class CustomPlot extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     );
-                  },
-                ),
-              ),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: intervalY,
-                  reservedSize: 30,
-                  getTitlesWidget: (value, meta) {
-                    return SideTitleWidget(
-                      axisSide: meta.axisSide,
-                      child: Text(
-                        value.toInt().toString(),
-                        style: TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-            ),
-            gridData: FlGridData(
-              drawVerticalLine: false,
-              drawHorizontalLine: true,
-              horizontalInterval: intervalY,
-            ),
-            borderData: FlBorderData(show: true),
-            clipData:
-                FlClipData(top: true, bottom: true, left: false, right: false),
-            lineBarsData: [
-              _buildLineChartBarData('ACL', Colors.red),
-              _buildLineChartBarData('CTL', Colors.blue),
-              _buildLineChartBarData('TSB', Colors.deepPurple),
-            ],
-            minY: minY,
-            maxY: maxY,
-            lineTouchData: LineTouchData(
-              enabled: true,
-              handleBuiltInTouches: true,
-              touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-                if (event is FlTapUpEvent || event is FlLongPressEnd) {
-                  if (response != null && response.lineBarSpots != null) {
-                    final spot = response.lineBarSpots!.first;
-                    final DateTime date =
-                        DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
-                    scoreProvider.setNewScoresOfDay(date, scores[date]!);
+                  } else {
+                    return Container();
                   }
                 }
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  angle: -pi / 5,
+                  child: Text(
+                    '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}',
+                    style: TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                );
               },
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipItems: (touchedSpots) {
-                  return touchedSpots.map((touchedSpot) {
-                    return null;
-                  }).toList();
-                },
-              ),
             ),
           ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: intervalY,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              },
+            ),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
-      ],
+        gridData: FlGridData(
+          drawVerticalLine: false,
+          drawHorizontalLine: true,
+          horizontalInterval: intervalY,
+        ),
+        borderData: FlBorderData(show: true),
+        clipData:
+            FlClipData(top: true, bottom: true, left: false, right: false),
+        lineBarsData: [
+          _buildLineChartBarData('ACL', Colors.red),
+          _buildLineChartBarData('CTL', Colors.blue),
+          _buildLineChartBarData('TSB', Colors.deepPurple),
+        ],
+        minY: minY,
+        maxY: maxY,
+        lineTouchData: LineTouchData(
+          enabled: true,
+          handleBuiltInTouches: true,
+          touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+            if (event is FlTapUpEvent || event is FlLongPressEnd) {
+              if (response != null && response.lineBarSpots != null) {
+                final spot = response.lineBarSpots!.first;
+                final DateTime date =
+                    DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
+                scoreProvider.setNewScoresOfDay(date, scores[date]!);
+              }
+            }
+          },
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((touchedSpot) {
+                return null;
+              }).toList();
+            },
+          ),
+        ),
+      ),
     );
   }
 

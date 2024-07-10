@@ -9,6 +9,7 @@ class UserProvider with ChangeNotifier {
   int? age;
   int? mesocycleLength;
   DateTime? mesocycleStartDate;
+  DateTime? mesocycleEndDate;
 
   UserProvider() {
     _loadUserData();
@@ -31,6 +32,10 @@ class UserProvider with ChangeNotifier {
     String? startDate = prefs.getString('mesocycleStart');
     if (startDate != null) {
       mesocycleStartDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(startDate));
+
+      if (mesocycleLength != null) {
+        mesocycleEndDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(startDate)).add(Duration(days: mesocycleLength!-1));
+      }
     }
     
     notifyListeners();
@@ -56,6 +61,7 @@ class UserProvider with ChangeNotifier {
     age = _computeAge();
     mesocycleLength = newMesoLength;
     mesocycleStartDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart));
+    mesocycleEndDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart)).add(Duration(days: newMesoLength-1));
 
     notifyListeners();
   }
