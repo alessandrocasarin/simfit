@@ -8,7 +8,7 @@ class Steps {
 
   Steps.fromJson(String date, Map<String, dynamic> json) :
       timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').parse('$date ${json["time"]}'),
-      value = (json["value"] ?? 0).toInt();
+      value = int.parse(json["value"] ?? 0);
 }
 
 int getTotalStepsFromDay(List<Steps> dataSteps) {
