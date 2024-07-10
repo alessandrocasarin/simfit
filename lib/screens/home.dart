@@ -26,21 +26,21 @@ class _HomeState extends State<Home> {
         .getDataOfDay(DateTime.now());
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(2000, 1),
-      lastDate: DateTime(2100, 12),
+      lastDate:
+          DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1))),
     );
     if (picked != null && picked != selectedDate) {
       selectedDate = picked;
     }
   }
 
-  Widget TrainingSessionRecap({required Activity activity}) {
-    DateFormat formatter = DateFormat('HH:mm');
-
+  Widget trainingSessionRecap({required Activity activity}) {
+    // activity values
     DateTime startingTime = activity.startingTime;
     String activityName = activity.activityName;
     Duration duration = activity.duration;
@@ -53,6 +53,56 @@ class _HomeState extends State<Home> {
     double elevationGain = activity.elevationGain;
     List<HRZone> zonesHR = activity.zonesHR;
 
+    // strings for the graphic visualization of the activity values, with checks for missing values
+    String activityLabel =
+        '${DateFormat('HH:mm').format(startingTime)} - $activityName';
+
+    String secondsLabel = '';
+    (duration.inSeconds.remainder(60) < 10)
+        ? (secondsLabel = '0${duration.inSeconds.remainder(60)}')
+        : ('${duration.inSeconds.remainder(60)}');
+    String durationLabel =
+        '${duration.inHours}:${duration.inMinutes.remainder(60)}:$secondsLabel';
+    if (durationLabel == '00:00:00') {
+      durationLabel = ' - ';
+    }
+
+    String avgSpeedLabel = '${avgSpeed.toStringAsFixed(2)} km/h';
+    if (avgSpeedLabel == '0.00 km/h') {
+      avgSpeedLabel = ' - ';
+    }
+
+    String avgHRLabel = '$avgHR bpm';
+    if (avgHRLabel == '0 bpm') {
+      avgHRLabel = ' - ';
+    }
+
+    String vo2MaxLabel = '${vo2Max.toStringAsFixed(1)} ml/kg/min';
+    if (vo2MaxLabel == '0.0 ml/kg/min') {
+      vo2MaxLabel = ' - ';
+    }
+
+    String distanceLabel = '${distance.toStringAsFixed(2)} km';
+    if (distanceLabel == '0.00 km') {
+      distanceLabel = ' - ';
+    }
+
+    String stepsLabel = '$steps steps';
+    if (stepsLabel == '0 steps') {
+      stepsLabel = ' - ';
+    }
+
+    String caloriesLabel = '$calories kcal';
+    if (caloriesLabel == '0 kcal') {
+      caloriesLabel = ' - ';
+    }
+
+    String elevationGainLabel = '${elevationGain.toStringAsFixed(0)} m';
+    if (elevationGainLabel == '0 m') {
+      elevationGainLabel = ' - ';
+    }
+
+    // activity icon switch based on the type of activity
     IconData trainingIcon = FontAwesomeIcons.dumbbell;
     switch (activityName) {
       case 'Corsa':
@@ -66,6 +116,7 @@ class _HomeState extends State<Home> {
         break;
     }
 
+    // widget graphic structure
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
@@ -104,7 +155,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     Text(
-                      '${formatter.format(startingTime)} - $activityName',
+                      activityLabel,
                       textAlign: TextAlign.start,
                       style: const TextStyle(
                         color: Color(0xFF14181B),
@@ -137,7 +188,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '${duration.inHours}:${duration.inMinutes.remainder(60)}:${duration.inSeconds.remainder(60)}',
+                                durationLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -158,7 +209,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '${avgSpeed.toStringAsFixed(2)} km/h',
+                                avgSpeedLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -179,7 +230,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '$avgHR bpm',
+                                avgHRLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -200,7 +251,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '${vo2Max.toStringAsFixed(1)} ml/kg/min',
+                                vo2MaxLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -227,7 +278,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '${distance.toStringAsFixed(2)} km',
+                                distanceLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -251,7 +302,7 @@ class _HomeState extends State<Home> {
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     8, 4, 4, 4),
                                 child: Text(
-                                  '$steps steps',
+                                  stepsLabel,
                                   style: const TextStyle(
                                     color: Color(0xFF14181B),
                                     fontWeight: FontWeight.w500,
@@ -273,7 +324,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '$calories kcal',
+                                caloriesLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -294,7 +345,7 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                '${elevationGain.toStringAsFixed(0)} m',
+                                elevationGainLabel,
                                 style: const TextStyle(
                                   color: Color(0xFF14181B),
                                   fontWeight: FontWeight.w500,
@@ -398,7 +449,7 @@ class _HomeState extends State<Home> {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              await _selectDate(context);
+                              await selectDate(context);
                               provider.getDataOfDay(selectedDate);
                             },
                             child: Text(
@@ -432,9 +483,13 @@ class _HomeState extends State<Home> {
                             size: 30,
                           ),
                           onPressed: () {
-                            selectedDate =
-                                selectedDate.add(const Duration(days: 1));
-                            provider.getDataOfDay(selectedDate);
+                            if (!selectedDate.isAtSameMomentAs(
+                                DateUtils.dateOnly(DateTime.now()
+                                    .subtract(const Duration(days: 1))))) {
+                              selectedDate =
+                                  selectedDate.add(const Duration(days: 1));
+                              provider.getDataOfDay(selectedDate);
+                            }
                           },
                         ),
                       ),
@@ -520,7 +575,7 @@ class _HomeState extends State<Home> {
                                           Row(
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
-                                              Text(
+                                              Text( 
                                                 provider.totDailySteps
                                                     .toString(),
                                                 style: const TextStyle(
@@ -695,7 +750,7 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       provider.dailyActivities.length,
-                      (index) => TrainingSessionRecap(
+                      (index) => trainingSessionRecap(
                         activity: provider.dailyActivities[index],
                       ),
                     ),

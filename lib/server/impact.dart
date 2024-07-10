@@ -132,15 +132,18 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     dynamic data = jsonDecode(r.body)["data"];
-    List<Activity> activities = [];
-    for (var currentActivity in data["data"]) {
-      activities.add(Activity.fromJson(data["date"], currentActivity));
+    if (data.isNotEmpty) {
+      List<Activity> activities = [];
+      for (var currentActivity in data["data"]) {
+        activities.add(Activity.fromJson(data["date"], currentActivity));
+      }
+      return activities;
     }
-
-    return activities;
+    return [];
   }
 
-  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(DateTime start, DateTime end) async {
+  Future<Map<DateTime, List<Activity>>> getActivitiesFromDateRange(
+      DateTime start, DateTime end) async {
     Map<DateTime, List<Activity>> activities = {};
 
     if (start.isAtSameMomentAs(end)) {
@@ -148,7 +151,8 @@ class Impact {
       return activities;
     }
 
-    List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
+    List<Map<String, String>> formattedStartEnd =
+        _formatFromRangeToWeeks(start, end);
     for (var element in formattedStartEnd) {
       var header = await getBearer();
       var r = await http.get(
@@ -158,13 +162,15 @@ class Impact {
       );
       if (r.statusCode == 200) {
         List<dynamic> data = jsonDecode(r.body)["data"];
-        for (var daydata in data) {
-          List<Activity> dayActivities = [];
-          String day = daydata["date"];
-          for (var currentActivity in daydata["data"]) {
-            dayActivities.add(Activity.fromJson(day, currentActivity));
+        if (data.isNotEmpty) {
+          for (var daydata in data) {
+            List<Activity> dayActivities = [];
+            String day = daydata["date"];
+            for (var currentActivity in daydata["data"]) {
+              dayActivities.add(Activity.fromJson(day, currentActivity));
+            }
+            activities[DateFormat('yyyy-MM-dd').parse(day)] = dayActivities;
           }
-          activities[DateFormat('yyyy-MM-dd').parse(day)] =  dayActivities;
         }
       }
     }
@@ -182,14 +188,17 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     dynamic data = jsonDecode(r.body)["data"];
-    List<HR> hr = [];
-    for (var currentHR in data["data"]) {
-      hr.add(HR.fromJson(data["date"], currentHR));
-    }
+    if (data.isNotEmpty) {
+      List<HR> hr = [];
+      for (var currentHR in data["data"]) {
+        hr.add(HR.fromJson(data["date"], currentHR));
+      }
 
-    var hrlist = hr.toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    return hrlist;
+      var hrlist = hr.toList()
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      return hrlist;
+    }
+    return [];
   }
 
   Future<List<Calories>> getCaloriesFromDay(DateTime day) async {
@@ -203,14 +212,17 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     dynamic data = jsonDecode(r.body)["data"];
-    List<Calories> calories = [];
-    for (var currentCals in data["data"]) {
-      calories.add(Calories.fromJson(data["date"], currentCals));
-    }
+    if (data.isNotEmpty) {
+      List<Calories> calories = [];
+      for (var currentCals in data["data"]) {
+        calories.add(Calories.fromJson(data["date"], currentCals));
+      }
 
-    var calorieslist = calories.toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    return calorieslist;
+      var calorieslist = calories.toList()
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      return calorieslist;
+    }
+    return [];
   }
 
   Future<List<Steps>> getStepsFromDay(DateTime day) async {
@@ -224,14 +236,17 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     dynamic data = jsonDecode(r.body)["data"];
-    List<Steps> steps = [];
-    for (var currentSteps in data["data"]) {
-      steps.add(Steps.fromJson(data["date"], currentSteps));
-    }
+    if (data.isNotEmpty) {
+      List<Steps> steps = [];
+      for (var currentSteps in data["data"]) {
+        steps.add(Steps.fromJson(data["date"], currentSteps));
+      }
 
-    var stepslist = steps.toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-    return stepslist;
+      var stepslist = steps.toList()
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      return stepslist;
+    }
+    return [];
   }
 
   Future<List<Sleep>> getSleepsFromDay(DateTime day) async {
@@ -245,11 +260,14 @@ class Impact {
     if (r.statusCode != 200) return [];
 
     dynamic data = jsonDecode(r.body)["data"];
-    List<Sleep> sleeps = [];
-    for (var currentSleep in data["data"]) {
-      sleeps.add(Sleep.fromJson(data["date"], currentSleep));
+    if (data.isNotEmpty) {
+      List<Sleep> sleeps = [];
+      for (var currentSleep in data["data"]) {
+        sleeps.add(Sleep.fromJson(data["date"], currentSleep));
+      }
+      return sleeps;
     }
-    return sleeps;
+    return [];
   }
 
   Future<double> getRestHRFromDay(DateTime day) async {
@@ -263,13 +281,18 @@ class Impact {
     if (r.statusCode != 200) return 0.0;
 
     dynamic data = jsonDecode(r.body)["data"];
-    return data["data"]["value"] ?? 0.0;
+    if (data.isNotEmpty) {
+      return data["data"]["value"] ?? 0.0;
+    }
+    return 0.0;
   }
 
-  Future<Map<DateTime, double>> getRestHRsFromDateRange(DateTime start, DateTime end) async {
+  Future<Map<DateTime, double>> getRestHRsFromDateRange(
+      DateTime start, DateTime end) async {
     Map<DateTime, double> restHRs = {};
 
-    List<Map<String, String>> formattedStartEnd = _formatFromRangeToWeeks(start, end);
+    List<Map<String, String>> formattedStartEnd =
+        _formatFromRangeToWeeks(start, end);
 
     for (Map<String, String> element in formattedStartEnd) {
       var header = await getBearer();
@@ -283,7 +306,7 @@ class Impact {
         for (var daydata in data) {
           String day = daydata["date"];
           double dayRestHR = daydata["data"]["value"];
-          restHRs[DateFormat('yyyy-MM-dd').parse(day)] =  dayRestHR;
+          restHRs[DateFormat('yyyy-MM-dd').parse(day)] = dayRestHR;
         }
       }
     }
@@ -291,7 +314,8 @@ class Impact {
     return restHRs;
   }
 
-  List<Map<String, String>> _formatFromRangeToWeeks(DateTime start, DateTime end) {
+  List<Map<String, String>> _formatFromRangeToWeeks(
+      DateTime start, DateTime end) {
     List<Map<String, String>> weeks = [];
 
     int daysRange = end.difference(start).inDays;
@@ -299,28 +323,28 @@ class Impact {
     int remainingDays = daysRange % 7;
 
     // complete weeks
-    for (int weeksToSubtract = 0; weeksToSubtract < completeWeeks; weeksToSubtract++) {
-      String formattedStart = DateFormat('yyyy-MM-dd').format(end.subtract(Duration(days: (weeksToSubtract+1)*7)));
-      String formattedEnd = DateFormat('yyyy-MM-dd').format(end.subtract(Duration(days: weeksToSubtract*7)));
-      weeks.add(
-        {
-          'start': formattedStart,
-          'end': formattedEnd,
-        }
-      );
+    for (int weeksToSubtract = 0;
+        weeksToSubtract < completeWeeks;
+        weeksToSubtract++) {
+      String formattedStart = DateFormat('yyyy-MM-dd')
+          .format(end.subtract(Duration(days: (weeksToSubtract + 1) * 7)));
+      String formattedEnd = DateFormat('yyyy-MM-dd')
+          .format(end.subtract(Duration(days: weeksToSubtract * 7)));
+      weeks.add({
+        'start': formattedStart,
+        'end': formattedEnd,
+      });
     }
 
     // remaining days
     if (remainingDays > 0) {
-      weeks.add(
-        {
-          'start': DateFormat('yyyy-MM-dd').format(start),
-          'end': DateFormat('yyyy-MM-dd').format(start.add(Duration(days: remainingDays))),
-        }
-      );
+      weeks.add({
+        'start': DateFormat('yyyy-MM-dd').format(start),
+        'end': DateFormat('yyyy-MM-dd')
+            .format(start.add(Duration(days: remainingDays))),
+      });
     }
 
     return weeks;
   }
-
 } //Impact
