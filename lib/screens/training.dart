@@ -21,7 +21,8 @@ class Training extends StatefulWidget {
 class _TrainingState extends State<Training> {
   final Impact impact = Impact();
 
-  DateTime lastDate = DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1)));
+  DateTime lastDate =
+      DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1)));
   late Future<Map<String, dynamic>> _fetchDataFuture;
   late UserProvider _userProvider;
 
@@ -203,16 +204,19 @@ class _TrainingState extends State<Training> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context)
-                              .primaryColor,
-                          foregroundColor: Theme.of(context)
-                              .secondaryHeaderColor,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor:
+                              Theme.of(context).secondaryHeaderColor,
                         ),
-                        child: const Text(
-                          'SIMULATE TRAINING',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Text(
+                            'SIMULATE TRAINING',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

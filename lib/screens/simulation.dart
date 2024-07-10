@@ -133,7 +133,10 @@ class _SessionSimulationState extends State<SessionSimulation> {
                             });
                           });
                         },
-                        child: Icon(Icons.add),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Icon(Icons.add),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor:
@@ -149,7 +152,10 @@ class _SessionSimulationState extends State<SessionSimulation> {
                             });
                           }
                         },
-                        child: Icon(Icons.remove),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Icon(Icons.remove),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor:
@@ -216,10 +222,14 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           foregroundColor:
                               Theme.of(context).secondaryHeaderColor,
                         ),
-                        child: const Text(
-                          'RUN SIMULATION',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Text(
+                            'RUN SIMULATION',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ],

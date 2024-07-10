@@ -324,10 +324,13 @@ class _ProfileState extends State<Profile> {
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Theme.of(context).secondaryHeaderColor,
                       ),
-                      child: const Text(
-                        'SAVE',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        child: Text(
+                          'SAVE',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),

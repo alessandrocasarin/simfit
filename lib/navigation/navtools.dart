@@ -103,9 +103,12 @@ class NavDrawer extends StatelessWidget {
                   backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Theme.of(context).secondaryHeaderColor,
                 ),
-                child: const Text(
-                  'LOG OUT',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: Text(
+                    'LOG OUT',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),
