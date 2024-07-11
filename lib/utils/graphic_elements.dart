@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:simfit/models/activity.dart';
 import 'package:simfit/providers/score_provider.dart';
 
 class CustomPlot extends StatelessWidget {
@@ -216,6 +217,80 @@ class TRIMPDisplay extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+class HRZoneBarChart extends StatelessWidget {
+  final List<HRZone> zonesHR;
+
+  HRZoneBarChart({required this.zonesHR});
+
+  @override
+  Widget build(BuildContext context) {
+    int maxMinutes = zonesHR
+        .map((zone) => zone.minutes)
+        .reduce((max, minutes) => max > minutes ? max : minutes);
+    double intervalY =
+        (maxMinutes < 50) ? 5 : (maxMinutes.abs() / 100).ceil() * 10.toDouble();
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        barGroups: zonesHR.map((zone) {
+          int index = zonesHR.indexOf(zone);
+          return BarChartGroupData(
+            x: index,
+            barRods: [
+              BarChartRodData(
+                toY: zone.minutes.toDouble(),
+                color: Theme.of(context).primaryColor,
+                width: 30,
+                borderRadius: BorderRadius.circular(0),
+              ),
+            ],
+          );
+        }).toList(),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                    axisSide: meta.axisSide,
+                    child: Text(
+                      zonesHR[value.toInt()].name.replaceAll(' ', '\n'),
+                      softWrap: true,
+                    ));
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: intervalY,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  child: (Text(value.toInt().toString())),
+                );
+              },
+            ),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        gridData: FlGridData(show: false),
       ),
     );
   }

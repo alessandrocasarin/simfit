@@ -12,13 +12,15 @@ class HomeProvider extends ChangeNotifier {
   double totDailyCalories = 0;
   List<Sleep> dailySleep = [];
   Duration mainDailySleep = const Duration(hours: 0, minutes: 0);
-  dynamic dailyRestHR = 0;
+  double dailyRestHR = 0.0;
   List<Activity> dailyActivities = [];
+
+  bool dataReady = false;
 
   final Impact impact = Impact();
 
   void getDataOfDay(DateTime showDate) async {
-    showDate = DateUtils.dateOnly(showDate);
+    _loading();
 
     dailySteps = await impact.getStepsFromDay(showDate);
     totDailySteps = getTotalStepsFromDay(dailySteps);
@@ -33,6 +35,25 @@ class HomeProvider extends ChangeNotifier {
 
     dailyActivities = await impact.getActivitiesFromDay(showDate);
 
-    notifyListeners();
+    dataReady = true;
+    _notifyListeners();
+  }
+
+  void _loading() {
+    dailySteps = [];
+    totDailySteps = 0;
+    dailyCalories = [];
+    totDailyCalories = 0;
+    dailySleep = [];
+    mainDailySleep = Duration(hours: 0, minutes: 0);
+    dailyRestHR = 0.0;
+    dailyActivities = [];
+
+    dataReady = false;
+    _notifyListeners();
+  }
+
+  void _notifyListeners() {
+    Future.microtask(() => notifyListeners());
   }
 }
