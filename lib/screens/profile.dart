@@ -97,7 +97,7 @@ class _ProfileState extends State<Profile> {
 
   Widget _buildTextFormField({
     required TextEditingController controller,
-    required String hintText,
+    required String labelText,
     required IconData icon,
     required String? Function(String?) validator,
     VoidCallback? onTap,
@@ -131,12 +131,13 @@ class _ProfileState extends State<Profile> {
           ),
           prefixIcon:
               Icon(icon, color: Theme.of(context).primaryColor, size: 30),
-          hintText: hintText,
-          hintStyle: TextStyle(fontSize: 16),
+          labelText: labelText,
+          labelStyle: TextStyle(fontSize: 20),
         ),
         validator: validator,
         onTap: onTap,
         keyboardType: keyboardType,
+        style: TextStyle(fontSize: 20),
       ),
     );
   }
@@ -167,13 +168,14 @@ class _ProfileState extends State<Profile> {
                     'About you',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 24,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
+                  SizedBox(height: 5),
                   _buildTextFormField(
                     controller: nameController,
-                    hintText: 'Name',
+                    labelText: 'Name',
                     icon: Icons.person,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -187,7 +189,7 @@ class _ProfileState extends State<Profile> {
                   ),
                   _buildTextFormField(
                     controller: dateBirthController,
-                    hintText: 'Date of Birth',
+                    labelText: 'Date of Birth',
                     icon: Icons.calendar_month_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -259,7 +261,9 @@ class _ProfileState extends State<Profile> {
                                   child: Text(
                                     'Male',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.normal),
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 20,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -277,7 +281,9 @@ class _ProfileState extends State<Profile> {
                                   child: Text(
                                     'Female',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.normal),
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 20,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -297,13 +303,14 @@ class _ProfileState extends State<Profile> {
                     'About the training',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 24,
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
+                  SizedBox(height: 5),
                   _buildTextFormField(
                     controller: durationMesoController,
-                    hintText: 'Mesocycle duration (days)',
+                    labelText: 'Mesocycle duration (days)',
                     icon: Icons.av_timer,
                     keyboardType: TextInputType.number,
                     validator: (value) {
@@ -319,7 +326,7 @@ class _ProfileState extends State<Profile> {
                   ),
                   _buildTextFormField(
                     controller: dateMesoController,
-                    hintText: 'Date of mesocycle start',
+                    labelText: 'Date of mesocycle start',
                     icon: Icons.play_arrow_rounded,
                     validator: (value) {
                       if (value == null || value.isEmpty) {

@@ -18,6 +18,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    firstLogin = prefs.getBool('firstLogin') ?? firstLogin;
     name = prefs.getString('name') ?? name;
     gender = prefs.getString('gender') ?? gender;
 
@@ -50,6 +51,10 @@ class UserProvider with ChangeNotifier {
     required String newMesoStart,
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    if (firstLogin) {
+      await prefs.setBool('firstLogin', false);
+      firstLogin = false;
+    }
     await prefs.setString('name', newName);
     await prefs.setString('gender', newGender);
     await prefs.setString('birthDate', newBirthDate);
@@ -64,7 +69,6 @@ class UserProvider with ChangeNotifier {
     mesocycleStartDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart));
     mesocycleEndDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart)).add(Duration(days: newMesoLength-1));
 
-    firstLogin = false;
     notifyListeners();
   }
 

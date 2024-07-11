@@ -134,7 +134,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           });
                         },
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 6),
+                          padding: EdgeInsets.symmetric(vertical: 0),
                           child: Icon(Icons.add),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -153,7 +153,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           }
                         },
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 6),
+                          padding: EdgeInsets.symmetric(vertical: 0),
                           child: Icon(Icons.remove),
                         ),
                         style: ElevatedButton.styleFrom(

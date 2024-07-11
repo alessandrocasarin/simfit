@@ -8,7 +8,6 @@ import 'package:simfit/screens/login.dart';
 import 'package:simfit/screens/profile.dart';
 import 'package:profile_photo/profile_photo.dart';
 import 'package:simfit/screens/info.dart';
-import 'package:simfit/screens/settings.dart';
 import 'package:simfit/screens/training.dart';
 
 class NavDrawer extends StatelessWidget {
@@ -90,6 +89,18 @@ class NavDrawer extends StatelessWidget {
               _toTrainingPage(context);
             },
           ),
+          ListTile(
+            trailing: Icon(Icons.info_rounded,
+                color: Theme.of(context).primaryColor, size: 30),
+            title: Text('About SimFit',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).primaryColor)),
+            onTap: () {
+              _toInfoPage(context);
+            },
+          ),
           Spacer(),
           Align(
             alignment: Alignment.bottomCenter,
@@ -153,9 +164,4 @@ class NavDrawer extends StatelessWidget {
     );
   }
 
-  void _toSettingPage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: ((context) => const Settings())),
-    );
-  }
 }

@@ -25,17 +25,30 @@ class _TrainingState extends State<Training> {
       DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 1)));
   late Future<Map<String, dynamic>> _fetchDataFuture;
   late UserProvider _userProvider;
+  bool isMesocycleStartToday = false;
+  bool isMesocycleStartFuture = false;
 
   @override
   void initState() {
     super.initState();
     _userProvider = Provider.of<UserProvider>(context, listen: false);
+    DateTime? startDate = _userProvider.mesocycleStartDate;
     DateTime? endDate = _userProvider.mesocycleEndDate;
-    if (endDate != null) {
-      if (endDate.isBefore(DateUtils.dateOnly(DateTime.now()))) {
-        lastDate = endDate;
+
+    if (startDate != null) {
+      DateTime today = DateUtils.dateOnly(DateTime.now());
+      if (DateUtils.dateOnly(startDate) == today) {
+        isMesocycleStartToday = true;
+      } else if (startDate.isAfter(today)) {
+        isMesocycleStartFuture = true;
       }
     }
+
+    if (endDate != null &&
+        endDate.isBefore(DateUtils.dateOnly(DateTime.now()))) {
+      lastDate = endDate;
+    }
+
     _fetchDataFuture = _fetchData(context);
   }
 
@@ -101,135 +114,212 @@ class _TrainingState extends State<Training> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            Map<DateTime, List<Activity>> activities =
-                snapshot.data!['activities'];
-            double restHR = snapshot.data!['restHR'];
-
-            Algorithm algorithm = Algorithm(
-              gender: _userProvider.gender ?? 'male',
-              age: _userProvider.age ?? 0,
-              rHR: restHR,
-              mesoLen: _userProvider.mesocycleLength ?? 42,
-              daysFromMesoStart: lastDate
-                      .difference(_userProvider.mesocycleStartDate ??
-                          DateUtils.dateOnly(DateTime.now()
-                              .subtract(const Duration(days: 30))))
-                      .inDays +
-                  1,
-            );
-            Map<DateTime, Map<String, double>> mesocycleScores =
-                algorithm.computeScoresOfMesocycle(lastDate, activities);
-
-            ScoreProvider scoreProvider = ScoreProvider(
-              day: lastDate,
-              scoresOfDay: mesocycleScores[lastDate]!,
-            );
-
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: ChangeNotifierProvider<ScoreProvider>(
-                  create: (context) => scoreProvider,
-                  builder: (context, child) => Column(
-                    children: [
-                      PlotContainer(
-                        scores: mesocycleScores,
-                        scoreProvider: scoreProvider,
-                      ),
-                      SizedBox(height: 20),
-                      Consumer<ScoreProvider>(
-                        builder: (context, provider, child) {
-                          return Column(
-                            children: [
-                              Text(
-                                'Training scores of ${provider.day.day.toString().padLeft(2, '0')}/${provider.day.month.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              TRIMPDisplay(
-                                index: (provider.scoresOfDay['TRIMP']!),
-                              ),
-                              Text(
-                                'Acute Training Load: ${(provider.scoresOfDay['ACL']!).toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                'Chronic Training Load: ${(provider.scoresOfDay['CTL']!).toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                'Training Stress Balance: ${(provider.scoresOfDay['TSB']!).toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  color: Colors.deepPurple,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (lastDate.isBefore(DateUtils.dateOnly(
-                              DateTime.now().subtract(Duration(days: 1))))) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Center(
-                                  child: Text(
-                                    'Your mesocycle ended on ${lastDate.day.toString().padLeft(2, '0')}/${lastDate.month.toString().padLeft(2, '0')}!',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
-                          } else {
-                            _toSimulationPage(
-                              context,
-                              mesocycleScores,
-                              algorithm,
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor:
-                              Theme.of(context).secondaryHeaderColor,
-                        ),
-                        child: const Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                          child: Text(
-                            'SIMULATE TRAINING',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
-                  ),
-                ),
-              ),
-            );
+            if (isMesocycleStartToday) {
+              return _buildMesocycleStartTodayUI(snapshot.data!['restHR']);
+            } else if (isMesocycleStartFuture) {
+              return _buildMesocycleStartFutureUI();
+            } else {
+              return _buildTrainingLoadUI(snapshot.data!);
+            }
           }
         },
       ),
       drawer: NavDrawer(),
+    );
+  }
+
+  Widget _buildMesocycleStartTodayUI(double restHR) {
+    Algorithm algorithm = Algorithm(
+      gender: _userProvider.gender ?? 'male',
+      age: _userProvider.age ?? 0,
+      rHR: restHR,
+      mesoLen: _userProvider.mesocycleLength ?? 42,
+      daysFromMesoStart: 1,
+    );
+    Map<DateTime, Map<String, double>> mesocycleScores = {};
+
+    return SafeArea(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Your training mesocycle starts today! You can try to simulate your first training session.',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _toSimulationPage(
+                  context,
+                  mesocycleScores,
+                  algorithm,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Theme.of(context).secondaryHeaderColor,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                child: Text(
+                  'SIMULATE TRAINING',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMesocycleStartFutureUI() {
+    DateTime startDate = _userProvider.mesocycleStartDate!;
+    String startDateString =
+        '${startDate.day.toString().padLeft(2, '0')}/${startDate.month.toString().padLeft(2, '0')}';
+
+    return SafeArea(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Text(
+            'Your training mesocycle will start on $startDateString',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrainingLoadUI(Map<String, dynamic> data) {
+    Map<DateTime, List<Activity>> activities = data['activities'];
+    double restHR = data['restHR'];
+
+    Algorithm algorithm = Algorithm(
+      gender: _userProvider.gender ?? 'male',
+      age: _userProvider.age ?? 0,
+      rHR: restHR,
+      mesoLen: _userProvider.mesocycleLength ?? 42,
+      daysFromMesoStart: lastDate
+              .difference(_userProvider.mesocycleStartDate ??
+                  DateUtils.dateOnly(
+                      DateTime.now().subtract(const Duration(days: 30))))
+              .inDays +
+          1,
+    );
+    Map<DateTime, Map<String, double>> mesocycleScores =
+        algorithm.computeScoresOfMesocycle(lastDate, activities);
+
+    ScoreProvider scoreProvider = ScoreProvider(
+      day: lastDate,
+      scoresOfDay: mesocycleScores[lastDate]!,
+    );
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: ChangeNotifierProvider<ScoreProvider>(
+          create: (context) => scoreProvider,
+          builder: (context, child) => Column(
+            children: [
+              PlotContainer(
+                scores: mesocycleScores,
+                scoreProvider: scoreProvider,
+              ),
+              SizedBox(height: 20),
+              Consumer<ScoreProvider>(
+                builder: (context, provider, child) {
+                  return Column(
+                    children: [
+                      Text(
+                        'Training scores of ${provider.day.day.toString().padLeft(2, '0')}/${provider.day.month.toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      TRIMPDisplay(
+                        index: (provider.scoresOfDay['TRIMP']!),
+                      ),
+                      Text(
+                        'Acute Training Load: ${(provider.scoresOfDay['ACL']!).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        'Chronic Training Load: ${(provider.scoresOfDay['CTL']!).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        'Training Stress Balance: ${(provider.scoresOfDay['TSB']!).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.deepPurple,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (lastDate.isBefore(DateUtils.dateOnly(
+                      DateTime.now().subtract(Duration(days: 1))))) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Center(
+                          child: Text(
+                            'Your mesocycle ended on ${lastDate.day.toString().padLeft(2, '0')}/${lastDate.month.toString().padLeft(2, '0')}!',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  } else {
+                    _toSimulationPage(
+                      context,
+                      mesocycleScores,
+                      algorithm,
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Theme.of(context).secondaryHeaderColor,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                  child: Text(
+                    'SIMULATE TRAINING',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
