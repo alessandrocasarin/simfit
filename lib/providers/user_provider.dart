@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider with ChangeNotifier {
+  bool firstLogin = true;
   String? name;
   String? gender;
   DateTime? birthDate;
@@ -63,6 +64,7 @@ class UserProvider with ChangeNotifier {
     mesocycleStartDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart));
     mesocycleEndDate = DateUtils.dateOnly(DateFormat('yyyy-MM-dd').parse(newMesoStart)).add(Duration(days: newMesoLength-1));
 
+    firstLogin = false;
     notifyListeners();
   }
 

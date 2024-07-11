@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:simfit/navigation/navtools.dart';
 import 'package:simfit/providers/user_provider.dart';
+import 'package:simfit/screens/home.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -60,6 +61,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void _saveUserInfo() {
+    bool firstLogin = _userProvider.firstLogin;
     if (_formKey.currentState!.validate()) {
       _userProvider.setUserData(
         newName: nameController.text,
@@ -80,7 +82,17 @@ class _ProfileState extends State<Profile> {
           duration: Duration(seconds: 3),
         ),
       );
+      if (firstLogin) {
+        Future.delayed(Duration(seconds: 3), () {
+          _toHomePage(context);
+        });
+      }
     }
+  }
+
+  void _toHomePage(BuildContext context) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
   }
 
   Widget _buildTextFormField({
@@ -326,7 +338,8 @@ class _ProfileState extends State<Profile> {
                         foregroundColor: Theme.of(context).secondaryHeaderColor,
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                         child: Text(
                           'SAVE',
                           style: TextStyle(
@@ -342,7 +355,7 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       ),
-      drawer: NavDrawer(),
+      drawer: _userProvider.firstLogin ? null : NavDrawer(),
     );
   }
 }

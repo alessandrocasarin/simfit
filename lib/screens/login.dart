@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/screens/home.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -37,9 +38,7 @@ class _LoginState extends State<Login> {
       ),
       userValidator: _validateUsername,
       passwordValidator: _validatePassword,
-      onSubmitAnimationCompleted: () async {
-        _firstLogin(context);
-      },
+      onSubmitAnimationCompleted: () => _checkFirstLogin(context),
     );
   }
 
@@ -82,21 +81,17 @@ class _LoginState extends State<Login> {
   }
 
   void _toProfilePage(BuildContext context) {
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) => const Profile()));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Profile()));
   }
 
-  Future <void> _firstLogin(BuildContext context) async{
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    bool _loginSeen = sp.getBool('_loginSeen') ?? false;
-    
-    if(_loginSeen==true){
+  void _checkFirstLogin(BuildContext context) {
+    UserProvider userProv = UserProvider();
+
+    if (userProv.firstLogin == true) {
+      _toProfilePage(context);
+    } else {
       _toHomePage(context);
     }
-    else{
-      await sp.setBool('_loginSeen',true);
-      _toProfilePage(context);
-    }
+  }
 }
-}
-
