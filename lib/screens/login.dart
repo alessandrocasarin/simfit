@@ -3,6 +3,7 @@ import 'package:simfit/server/impact.dart';
 import 'package:simfit/screens/home.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simfit/screens/profile.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -37,7 +38,7 @@ class _LoginState extends State<Login> {
       userValidator: _validateUsername,
       passwordValidator: _validatePassword,
       onSubmitAnimationCompleted: () async {
-        _toHomePage(context);
+        _firstLogin(context);
       },
     );
   }
@@ -79,4 +80,23 @@ class _LoginState extends State<Login> {
     Navigator.of(context)
         .pushReplacement(MaterialPageRoute(builder: (context) => const Home()));
   }
+
+  void _toProfilePage(BuildContext context) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => const Profile()));
+  }
+
+  Future <void> _firstLogin(BuildContext context) async{
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    bool _loginSeen = sp.getBool('_loginSeen') ?? false;
+    
+    if(_loginSeen==true){
+      _toHomePage(context);
+    }
+    else{
+      await sp.setBool('_loginSeen',true);
+      _toProfilePage(context);
+    }
 }
+}
+
