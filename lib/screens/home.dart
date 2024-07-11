@@ -575,9 +575,11 @@ class _HomeState extends State<Home> {
                                           Row(
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
-                                              Text( 
-                                                provider.totDailySteps
-                                                    .toString(),
+                                              Text(
+                                                (provider.totDailySteps == 0)
+                                                    ? ' - '
+                                                    : provider.totDailySteps
+                                                        .toString(),
                                                 style: const TextStyle(
                                                   color: Color(0xFF14181B),
                                                   fontWeight: FontWeight.bold,
@@ -624,7 +626,9 @@ class _HomeState extends State<Home> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               Text(
-                                                '${provider.dailyRestHR.toInt().toString()} bpm',
+                                                (provider.dailyRestHR == 0)
+                                                    ? ' - '
+                                                    : '${(provider.dailyRestHR)} bpm',
                                                 style: const TextStyle(
                                                   color: Color(0xFF14181B),
                                                   fontWeight: FontWeight.bold,
@@ -676,7 +680,9 @@ class _HomeState extends State<Home> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               Text(
-                                                '${provider.totDailyCalories.toInt()} kcal',
+                                                (provider.totDailyCalories == 0)
+                                                    ? ' - '
+                                                    : '${provider.totDailyCalories} kcal',
                                                 style: const TextStyle(
                                                   color: Color(0xFF14181B),
                                                   fontWeight: FontWeight.bold,
@@ -723,7 +729,16 @@ class _HomeState extends State<Home> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               Text(
-                                                '${provider.mainDailySleep.inHours} h ${provider.mainDailySleep.inMinutes.remainder(60)} min',
+                                                (provider.mainDailySleep
+                                                                .inHours ==
+                                                            0 &&
+                                                        provider.mainDailySleep
+                                                                .inMinutes
+                                                                .remainder(
+                                                                    60) ==
+                                                            0)
+                                                    ? ' - '
+                                                    : '${provider.mainDailySleep.inHours} h ${provider.mainDailySleep.inMinutes.remainder(60)} min',
                                                 style: const TextStyle(
                                                   color: Color(0xFF14181B),
                                                   fontWeight: FontWeight.bold,
