@@ -19,15 +19,15 @@ class OnBoarding extends StatelessWidget {
       skipTextButton: Text(
         'Skip',
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 20,
           color:  Colors.blue,
           fontWeight: FontWeight.w600,
         ),
       ),
       trailing: Text(
-        'Learn more about mesocycle',
+        'Learn more',
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 20,
           color:  Colors.blue,
           fontWeight: FontWeight.w600,
         ),
@@ -80,7 +80,7 @@ class OnBoarding extends StatelessWidget {
                 height: 20,
               ),
               const Text(
-                'Keep track of your trainings performance via Fitbit data',
+                'Keep track of your training data collected by your Fitbit watch',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
@@ -115,7 +115,7 @@ class OnBoarding extends StatelessWidget {
                 height: 20,
               ),
               const Text(
-                'Simulate your trainings according to your features and objectives',
+                'Simulate the training loads according to your features and objectives',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
