@@ -237,8 +237,12 @@ class _HomeState extends State<Home> {
                                                           MainAxisSize.max,
                                                       children: [
                                                         Text(
-                                                          provider.totDailySteps
-                                                              .toString(),
+                                                          (provider.totDailySteps >
+                                                                  0)
+                                                              ? provider
+                                                                  .totDailySteps
+                                                                  .toString()
+                                                              : '-',
                                                           style:
                                                               const TextStyle(
                                                             color: Color(
@@ -297,7 +301,7 @@ class _HomeState extends State<Home> {
                                                           MainAxisSize.max,
                                                       children: [
                                                         Text(
-                                                          '${provider.dailyRestHR.toInt().toString()} bpm',
+                                                          (provider.dailyRestHR > 0) ? '${provider.dailyRestHR.toString()} bpm' : '-',
                                                           style:
                                                               const TextStyle(
                                                             color: Color(
@@ -361,7 +365,7 @@ class _HomeState extends State<Home> {
                                                           MainAxisSize.max,
                                                       children: [
                                                         Text(
-                                                          '${provider.totDailyCalories.toInt()} kcal',
+                                                          (provider.totDailyCalories > 0) ? '${provider.totDailyCalories.toString()} kcal' : '-',
                                                           style:
                                                               const TextStyle(
                                                             color: Color(
@@ -419,7 +423,7 @@ class _HomeState extends State<Home> {
                                                           MainAxisSize.max,
                                                       children: [
                                                         Text(
-                                                          '${provider.mainDailySleep.inHours} h ${provider.mainDailySleep.inMinutes.remainder(60)} min',
+                                                          (provider.mainDailySleep.inMinutes > 0) ? '${provider.mainDailySleep.inHours} h ${provider.mainDailySleep.inMinutes.remainder(60)} min' : '-',
                                                           style:
                                                               const TextStyle(
                                                             color: Color(

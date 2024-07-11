@@ -134,7 +134,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           });
                         },
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 6),
                           child: Icon(Icons.add),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -153,7 +153,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           }
                         },
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 6),
                           child: Icon(Icons.remove),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -224,7 +224,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                         ),
                         child: const Padding(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                              EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                           child: Text(
                             'RUN SIMULATION',
                             style: TextStyle(

@@ -9,10 +9,10 @@ class HomeProvider extends ChangeNotifier {
   List<Steps> dailySteps = [];
   int totDailySteps = 0;
   List<Calories> dailyCalories = [];
-  double totDailyCalories = 0;
+  int totDailyCalories = 0;
   List<Sleep> dailySleep = [];
   Duration mainDailySleep = const Duration(hours: 0, minutes: 0);
-  double dailyRestHR = 0.0;
+  int dailyRestHR = 0;
   List<Activity> dailyActivities = [];
 
   bool dataReady = false;
@@ -26,12 +26,12 @@ class HomeProvider extends ChangeNotifier {
     totDailySteps = getTotalStepsFromDay(dailySteps);
 
     dailyCalories = await impact.getCaloriesFromDay(showDate);
-    totDailyCalories = getTotalCaloriesFromDay(dailyCalories);
+    totDailyCalories = getTotalCaloriesFromDay(dailyCalories).toInt();
 
     dailySleep = await impact.getSleepsFromDay(showDate);
     mainDailySleep = getMainSleepFromDay(dailySleep);
 
-    dailyRestHR = await impact.getRestHRFromDay(showDate);
+    dailyRestHR = (await impact.getRestHRFromDay(showDate)).toInt();
 
     dailyActivities = await impact.getActivitiesFromDay(showDate);
 
@@ -46,7 +46,7 @@ class HomeProvider extends ChangeNotifier {
     totDailyCalories = 0;
     dailySleep = [];
     mainDailySleep = Duration(hours: 0, minutes: 0);
-    dailyRestHR = 0.0;
+    dailyRestHR = 0;
     dailyActivities = [];
 
     dataReady = false;
