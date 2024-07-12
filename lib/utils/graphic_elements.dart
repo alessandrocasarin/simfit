@@ -222,7 +222,6 @@ class TRIMPDisplay extends StatelessWidget {
   }
 }
 
-
 class HRZoneBarChart extends StatelessWidget {
   final List<HRZone> zonesHR;
 
@@ -291,6 +290,37 @@ class HRZoneBarChart extends StatelessWidget {
         ),
         borderData: FlBorderData(show: false),
         gridData: FlGridData(show: false),
+      ),
+    );
+  }
+}
+
+class PerformanceEmoji extends StatelessWidget {
+  final double tsb;
+  String emoji = '';
+
+  PerformanceEmoji({super.key, required this.tsb}) {
+    if (tsb < -25.0) {
+      emoji = '🥵';
+    } else if (tsb < -10.0) {
+      emoji = '😟';
+    } else if (tsb < 5.0) {
+      emoji = '😐';
+    } else if (tsb < 20.0) {
+      emoji = '😊';
+    } else {
+      emoji = '🤩';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      emoji,
+      style: TextStyle(
+        fontSize: 24,
+        color: Colors.deepPurple,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

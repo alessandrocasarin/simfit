@@ -31,7 +31,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
     _firstSetup = true;
     _activityBlocks.add({
       'controller': TextEditingController(),
-      'sliderValue': widget.simProv.algorithm.restHR,
+      'sliderValue': widget.simProv.algorithm.restHR+10.0,
     });
     super.initState();
   }
@@ -107,7 +107,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           ),
                           Slider(
                             value: sliderValue,
-                            min: widget.simProv.algorithm.restHR,
+                            min: widget.simProv.algorithm.restHR+10.0,
                             max: widget.simProv.algorithm.maxHR,
                             onChanged: (newValue) {
                               setState(() {
@@ -129,7 +129,7 @@ class _SessionSimulationState extends State<SessionSimulation> {
                           setState(() {
                             _activityBlocks.add({
                               'controller': TextEditingController(),
-                              'sliderValue': widget.simProv.algorithm.restHR,
+                              'sliderValue': widget.simProv.algorithm.restHR+10.0,
                             });
                           });
                         },
@@ -273,12 +273,20 @@ class _SessionSimulationState extends State<SessionSimulation> {
                                 fontSize: 18,
                               ),
                             ),
-                            Text(
-                              'Training Stress Balance: ${provider.simulatedScores['TSB']!.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                color: Colors.deepPurple,
-                                fontSize: 18,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Training Stress Balance: ${(provider.simulatedScores['TSB']!).toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: Colors.deepPurple,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                PerformanceEmoji(
+                                    tsb: provider.simulatedScores['TSB']!),
+                              ],
                             ),
                           ],
                         );

@@ -4,6 +4,7 @@ import 'package:simfit/models/activity.dart';
 import 'package:simfit/navigation/navtools.dart';
 import 'package:simfit/providers/score_provider.dart';
 import 'package:simfit/providers/user_provider.dart';
+import 'package:simfit/screens/help.dart';
 import 'package:simfit/screens/simulation.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/utils/algorithm.dart';
@@ -76,6 +77,11 @@ class _TrainingState extends State<Training> {
     }
   }
 
+  _toHelpPage(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const Help()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,10 +97,10 @@ class _TrainingState extends State<Training> {
           Padding(
             padding: const EdgeInsets.only(right: 5),
             child: IconButton(
-              icon: Icon(Icons.info_outline_rounded,
+              icon: Icon(Icons.help_outline_rounded,
                   color: Theme.of(context).secondaryHeaderColor, size: 28),
-              tooltip: 'Info Page',
-              onPressed: () {},
+              tooltip: 'Help',
+              onPressed: () => _toHelpPage(context),
             ),
           ),
         ],
@@ -263,12 +269,19 @@ class _TrainingState extends State<Training> {
                           fontSize: 18,
                         ),
                       ),
-                      Text(
-                        'Training Stress Balance: ${(provider.scoresOfDay['TSB']!).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: Colors.deepPurple,
-                          fontSize: 18,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Training Stress Balance: ${(provider.scoresOfDay['TSB']!).toStringAsFixed(2)}',
+                            style: TextStyle(
+                              color: Colors.deepPurple,
+                              fontSize: 18,
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          PerformanceEmoji(tsb: provider.scoresOfDay['TSB']!),
+                        ],
                       ),
                     ],
                   );
