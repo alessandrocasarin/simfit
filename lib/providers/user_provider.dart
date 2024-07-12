@@ -16,6 +16,17 @@ class UserProvider with ChangeNotifier {
     _loadUserData();
   }
 
+  Future<void> onboardUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('onboarded', true);
+  }
+
+  Future<bool> checkOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool onboarded = prefs.getBool('onboarded') ?? false;
+    return onboarded;
+  }
+
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     firstLogin = prefs.getBool('firstLogin') ?? firstLogin;

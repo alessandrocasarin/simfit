@@ -45,7 +45,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void _loadUserInfo() {
-    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    _userProvider = Provider.of<UserProvider>(context, listen: false);;
     setState(() {
       _gender = _userProvider.gender ?? 'male';
       dateBirthController.text = _userProvider.birthDate != null

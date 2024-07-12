@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
+import 'package:provider/provider.dart';
+import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/screens/login.dart';
 import 'package:simfit/screens/info.dart';
 
@@ -10,8 +12,10 @@ class OnBoarding extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnBoardingSlider(
       finishButtonText: 'Login',
-      onFinish: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: ((context) => const Login())));
+      onFinish: () async {
+        await Provider.of<UserProvider>(context, listen: false).onboardUser();
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: ((context) => const Login())));
       },
       finishButtonStyle: FinishButtonStyle(
         backgroundColor: Colors.blue,
@@ -20,7 +24,7 @@ class OnBoarding extends StatelessWidget {
         'Skip',
         style: TextStyle(
           fontSize: 20,
-          color:  Colors.blue,
+          color: Colors.blue,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -28,23 +32,20 @@ class OnBoarding extends StatelessWidget {
         'Learn more',
         style: TextStyle(
           fontSize: 20,
-          color:  Colors.blue,
+          color: Colors.blue,
           fontWeight: FontWeight.w600,
         ),
       ),
       trailingFunction: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => const Info())));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: ((context) => const Info())));
       },
-      controllerColor:  Colors.blue,
+      controllerColor: Colors.blue,
       totalPage: 3,
       headerBackgroundColor: Colors.white,
       pageBackgroundColor: Colors.white,
       background: [
-        Image.asset(
-          'assets/allenamento1.png',
-          height:375
-        ),
-        
+        Image.asset('assets/allenamento1.png', height: 375),
         Image.asset(
           'assets/allenamento3.png',
           height: 400,
@@ -71,7 +72,7 @@ class OnBoarding extends StatelessWidget {
                 'Track',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color:  Colors.blue,
+                  color: Colors.blue,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -106,7 +107,7 @@ class OnBoarding extends StatelessWidget {
                 'Simulate',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color:  Colors.blue,
+                  color: Colors.blue,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -141,7 +142,7 @@ class OnBoarding extends StatelessWidget {
                 'Train',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color:  Colors.blue,
+                  color: Colors.blue,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),

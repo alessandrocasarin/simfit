@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/screens/home.dart';
 import 'package:simfit/screens/login.dart';
+import 'package:simfit/screens/profile.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/screens/onboarding.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatelessWidget {
   const Splash({Key? key}) : super(key: key);
@@ -19,35 +21,36 @@ class Splash extends StatelessWidget {
   }
 
   void _toOnboardingPage(BuildContext context) {
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: ((context) => OnBoarding())));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => OnBoarding())));
   }
 
-  Future <void> _firstSeen(BuildContext context) async{
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    bool _introSeen = sp.getBool('_introSeen') ?? false;
-    
-    if(_introSeen==true){
-      _checkLogin(context);
-    }
-    else{
-      await sp.setBool('_introSeen',true);
-      _toOnboardingPage(context);
-    }
+  void _toProfilePage(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const Profile()));
   }
 
   void _checkLogin(BuildContext context) async {
-    final result = await Impact().refreshTokens();
-    if (result == 200) {
-      _toHomePage(context); 
+    UserProvider userProv = Provider.of<UserProvider>(context, listen: false);
+    if (await userProv.checkOnboarding() == false) {
+      _toOnboardingPage(context);
     } else {
-      _toLoginPage(context);
-    }  
+      final result = await Impact().refreshTokens();
+      if (result == 200) {
+        if (userProv.firstLogin == true) {
+          _toProfilePage(context);
+        } else {
+          _toHomePage(context);
+        }
+      } else {
+        _toLoginPage(context);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3), () => _firstSeen(context));
+    Future.delayed(const Duration(seconds: 3), () => _checkLogin(context));
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simfit/providers/user_provider.dart';
 import 'package:simfit/server/impact.dart';
 import 'package:simfit/screens/home.dart';
@@ -86,8 +87,7 @@ class _LoginState extends State<Login> {
   }
 
   void _checkFirstLogin(BuildContext context) {
-    UserProvider userProv = UserProvider();
-
+    UserProvider userProv = Provider.of<UserProvider>(context, listen: false);
     if (userProv.firstLogin == true) {
       _toProfilePage(context);
     } else {
