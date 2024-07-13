@@ -42,19 +42,19 @@ class OnBoarding extends StatelessWidget {
       centerBackground: true,
       background: [
         Padding(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.all(10),
           child:Image.asset(
           'assets/allenamento1.png',
           height: 400,
         ),),
         Padding(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.all(10),
           child:Image.asset(
           'assets/ciclista.jpg',
           height: 400,
         ),),
         Padding(
-          padding: EdgeInsets.all(0),
+          padding: EdgeInsets.all(10),
           child:Image.asset(
           'assets/grafico2.jpg',
           height: 400,
