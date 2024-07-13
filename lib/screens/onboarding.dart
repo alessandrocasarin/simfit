@@ -50,13 +50,13 @@ class OnBoarding extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(10),
           child:Image.asset(
-          'assets/ciclista.jpg',
+          'assets/grafico2.jpg',
           height: 400,
         ),),
         Padding(
           padding: EdgeInsets.all(10),
           child:Image.asset(
-          'assets/grafico2.jpg',
+          'assets/ciclista.jpg',
           height: 400,
         ),),
       ],
@@ -156,7 +156,7 @@ class OnBoarding extends StatelessWidget {
                 height: 20,
               ),
               const Text(
-                'Improve your performance by planning the trainings with mesocycles',
+                'Tune the progress of your performance and start!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
