@@ -39,20 +39,26 @@ class OnBoarding extends StatelessWidget {
       totalPage: 3,
       headerBackgroundColor: Colors.white,
       pageBackgroundColor: Colors.white,
+      centerBackground: true,
       background: [
-        Image.asset(
+        Padding(
+          padding: EdgeInsets.all(0),
+          child:Image.asset(
           'assets/allenamento1.png',
-          height:375
-        ),
-        
-        Image.asset(
-          'assets/allenamento3.png',
           height: 400,
-        ),
-        Image.asset(
-          'assets/grafico.png',
+        ),),
+        Padding(
+          padding: EdgeInsets.all(0),
+          child:Image.asset(
+          'assets/ciclista.jpg',
           height: 400,
-        ),
+        ),),
+        Padding(
+          padding: EdgeInsets.all(0),
+          child:Image.asset(
+          'assets/grafico2.jpg',
+          height: 400,
+        ),),
       ],
       speed: 1.8,
       pageBodies: [
@@ -72,7 +78,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color:  Colors.blue,
-                  fontSize: 24.0,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -84,7 +90,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
-                  fontSize: 18.0,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -107,7 +113,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color:  Colors.blue,
-                  fontSize: 24.0,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -119,7 +125,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
-                  fontSize: 18.0,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -142,7 +148,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color:  Colors.blue,
-                  fontSize: 24.0,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -154,7 +160,7 @@ class OnBoarding extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black26,
-                  fontSize: 18.0,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
