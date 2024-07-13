@@ -18,13 +18,13 @@ class OnBoarding extends StatelessWidget {
             MaterialPageRoute(builder: ((context) => const Login())));
       },
       finishButtonStyle: FinishButtonStyle(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       skipTextButton: Text(
         'Skip',
         style: TextStyle(
           fontSize: 20,
-          color: Colors.blue,
+          color: Theme.of(context).primaryColor,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -32,7 +32,7 @@ class OnBoarding extends StatelessWidget {
         'Learn more',
         style: TextStyle(
           fontSize: 20,
-          color: Colors.blue,
+          color: Theme.of(context).primaryColor,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -40,20 +40,30 @@ class OnBoarding extends StatelessWidget {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: ((context) => const Info())));
       },
-      controllerColor: Colors.blue,
+      controllerColor: Theme.of(context).primaryColor,
       totalPage: 3,
       headerBackgroundColor: Colors.white,
       pageBackgroundColor: Colors.white,
+      centerBackground: true,
       background: [
-        Image.asset('assets/allenamento1.png', height: 375),
-        Image.asset(
-          'assets/allenamento3.png',
+        Padding(
+          padding: EdgeInsets.all(10),
+          child:Image.asset(
+          'assets/allenamento1.png',
           height: 400,
-        ),
-        Image.asset(
-          'assets/grafico.png',
+        ),),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child:Image.asset(
+          'assets/grafico2.jpg',
           height: 400,
-        ),
+        ),),
+        Padding(
+          padding: EdgeInsets.all(10),
+          child:Image.asset(
+          'assets/ciclista.jpg',
+          height: 400,
+        ),),
       ],
       speed: 1.8,
       pageBodies: [
@@ -72,8 +82,8 @@ class OnBoarding extends StatelessWidget {
                 'Track',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 24.0,
+                  color:  Theme.of(context).primaryColor,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -84,8 +94,8 @@ class OnBoarding extends StatelessWidget {
                 'Keep track of your training data collected by your Fitbit watch',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 18.0,
+                  color: Colors.black,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -107,8 +117,8 @@ class OnBoarding extends StatelessWidget {
                 'Simulate',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 24.0,
+                  color:  Theme.of(context).primaryColor,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -119,8 +129,8 @@ class OnBoarding extends StatelessWidget {
                 'Simulate the training loads according to your features and objectives',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 18.0,
+                  color: Colors.black,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -142,8 +152,8 @@ class OnBoarding extends StatelessWidget {
                 'Train',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 24.0,
+                  color:  Theme.of(context).primaryColor,
+                  fontSize: 30.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -151,11 +161,11 @@ class OnBoarding extends StatelessWidget {
                 height: 20,
               ),
               const Text(
-                'Improve your performance by planning the trainings with mesocycles',
+                'Tune the progress of your performance and start!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 18.0,
+                  color: Colors.black,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
