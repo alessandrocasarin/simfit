@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 class Help extends StatelessWidget {
   const Help({super.key});
@@ -34,8 +35,21 @@ class Help extends StatelessWidget {
               SizedBox(height: 16),
               buildSectionTitle(context, 'TRIMP (Training Impulse)'),
               buildParagraph(
-                'TRIMP is a measure of training load based on exercise duration and intensity. It is calculated as: '
-                'TRIMP = duration (minutes) x %HRR x weighting factor, where %HRR = (avg HR during session - HR rest) / (HR max - HR rest). '
+                'TRIMP is a measure of training load based on exercise duration and intensity. It is calculated as:'
+              ),
+              Math.tex(
+                  r'TRIMP = \text{duration (minutes)} \times \%HRR \times \text{weighting factor}',
+                  textStyle: TextStyle(fontSize: 12),
+                ),
+              
+              SizedBox(height: 10),
+               Math.tex(
+                  r'\%HRR = \frac{\text{avg HR during session} - \text{HR rest}}{\text{HR max} - \text{HR rest}}',
+                  textStyle: TextStyle(fontSize: 12),
+                ),
+              
+              SizedBox(height: 10),
+              buildParagraph(
                 'The weighting factor is gender-specific: 1.67 for women and 1.92 for men. Higher TRIMP values indicate more intense training sessions.',
               ),
               buildSectionTitle(context, 'ACL (Acute Training Load)'),
@@ -44,7 +58,7 @@ class Help extends StatelessWidget {
               ),
               buildSectionTitle(context, 'CTL (Chronic Training Load)'),
               buildParagraph(
-                'CTL represents the long-term training load, specifically from the beginnig of the mesocycle. It provides a measure of an athlete\'s fitness. Higher CTL values indicate higher overall fitness.',
+                'CTL represents the long-term training load, specifically from the beginning of the mesocycle. It provides a measure of an athlete\'s fitness. Higher CTL values indicate higher overall fitness.',
               ),
               buildSectionTitle(context, 'TSB (Training Stress Balance)'),
               buildParagraph(

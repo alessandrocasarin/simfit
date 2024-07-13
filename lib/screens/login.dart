@@ -26,7 +26,14 @@ class _LoginState extends State<Login> {
       theme: LoginTheme(
         pageColorLight: Theme.of(context).primaryColor,
         primaryColor: Theme.of(context).primaryColor,
-        titleStyle: TextStyle(color: Theme.of(context).secondaryHeaderColor),
+        titleStyle: TextStyle(
+          color: Theme.of(context).secondaryHeaderColor,
+          fontWeight: FontWeight.bold,
+        ),
+        buttonStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
       ),
       onLogin: _userLogin,
       hideForgotPasswordButton: true,

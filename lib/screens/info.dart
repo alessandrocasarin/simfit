@@ -39,7 +39,7 @@ class Info extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'SimFit is an app to help you in tracking and planning your trainings. It provides you an overview on your daily health data and sports activities detected and tracked by your Fitbit watch.',
+                  'SimFit is an app to help you in tracking and planning your trainings. It provides you a summary on your daily health data tracked by your Fitbit watch and an overview of your performances during your training mesocycle.',
                   style: TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 16,
@@ -73,7 +73,7 @@ class Info extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'It is a training program period characterized by training objectives for the improvement of performance-related parameters.',
+                  'It is a training program period characterized by training goals for the improvement of performance-related parameters.',
                   style: TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 16,

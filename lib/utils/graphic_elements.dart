@@ -13,8 +13,11 @@ class CustomPlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use the first date as the reference date
+    final referenceDate = scores.keys.first;
+
     final xValues = scores.keys
-        .map((date) => date.millisecondsSinceEpoch.toDouble())
+        .map((date) => date.difference(referenceDate).inDays.toDouble())
         .toList()
       ..sort();
 
@@ -23,9 +26,12 @@ class CustomPlot extends StatelessWidget {
 
     // Calculate interval for the x-axis
     double? intervalX;
-    if (scores.length >= 6) {
-      intervalX = (maxX - minX) / 4;
+    if (scores.length > 2 && scores.length < 10) {
+      intervalX = (maxX - minX) / (scores.length-1);
+    } else if (scores.length >= 10) {
+      intervalX = (maxX - minX) / 3;
     }
+
 
     double minY = double.infinity;
     double maxY = double.negativeInfinity;
@@ -51,8 +57,7 @@ class CustomPlot extends StatelessWidget {
               reservedSize: 30,
               interval: intervalX,
               getTitlesWidget: (value, meta) {
-                DateTime date =
-                    DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                DateTime date = referenceDate.add(Duration(days: value.toInt()));
                 if (intervalX == null) {
                   if (value == minX || value == maxX) {
                     return SideTitleWidget(
@@ -127,7 +132,7 @@ class CustomPlot extends StatelessWidget {
               if (response != null && response.lineBarSpots != null) {
                 final spot = response.lineBarSpots!.first;
                 final DateTime date =
-                    DateTime.fromMillisecondsSinceEpoch(spot.x.toInt());
+                    referenceDate.add(Duration(days: spot.x.toInt()));
                 scoreProvider.setNewScoresOfDay(date, scores[date]!);
               }
             }
@@ -155,15 +160,17 @@ class CustomPlot extends StatelessWidget {
   }
 
   List<FlSpot> _getSpots(String key) {
+    final referenceDate = scores.keys.first;
     return scores.entries
         .where((entry) => entry.value.containsKey(key))
         .map((entry) => FlSpot(
-            entry.key.millisecondsSinceEpoch.toDouble(), entry.value[key]!))
+            entry.key.difference(referenceDate).inDays.toDouble(), entry.value[key]!))
         .toList()
       ..sort(
           (a, b) => a.x.compareTo(b.x)); // Ensure the spots are sorted by date
   }
 }
+
 
 class TRIMPDisplay extends StatelessWidget {
   final double index;
@@ -257,7 +264,7 @@ class HRZoneBarChart extends StatelessWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
+              reservedSize: 50,
               getTitlesWidget: (value, meta) {
                 return SideTitleWidget(
                     axisSide: meta.axisSide,

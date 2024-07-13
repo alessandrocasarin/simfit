@@ -134,13 +134,13 @@ class OnBoarding extends StatelessWidget {
                   height: 20,
                 ),
                 const Text(
-                  'Visualize your training load and simulate training sessions that suits your objectives',
+                  'Visualize your training load and simulate training sessions that suit your goals',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 22.0,
                     fontWeight: FontWeight.w600,
-                  ),
+                  )
                 ),
               ],
             ),
