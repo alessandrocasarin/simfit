@@ -365,7 +365,9 @@ class PlotContainer extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     if (scores.length == 1) {
-      return Container();
+      return Container(
+        height: screenHeight*0.25,
+      );
     } else {
       return Container(
         child: Column(
