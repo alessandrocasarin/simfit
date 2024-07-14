@@ -262,8 +262,12 @@ class Impact {
     dynamic data = jsonDecode(r.body)["data"];
     if (data.isNotEmpty) {
       List<Sleep> sleeps = [];
-      for (var currentSleep in data["data"]) {
-        sleeps.add(Sleep.fromJson(data["date"], currentSleep));
+      if (data["data"] is List) {
+        for (var currentSleep in data["data"]) {
+          sleeps.add(Sleep.fromJson(data["date"], currentSleep));
+        }
+      } else if (data["data"] is Map) {
+        sleeps.add(Sleep.fromJson(data["date"], data["data"]));
       }
       return sleeps;
     }
