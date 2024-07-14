@@ -59,11 +59,9 @@ class _TrainingState extends State<Training> {
       await Future.delayed(const Duration(seconds: 2));
 
       // Fetch activities and restHR based on userProvider data
-      final Map<DateTime, List<Activity>> activities =
-          await impact.getActivitiesFromDateRange(
-        _userProvider.mesocycleStartDate ??
-            DateUtils.dateOnly(
-                DateTime.now().subtract(const Duration(days: 30))),
+      DateTime start = _userProvider.mesocycleStartDate ?? DateUtils.dateOnly(DateTime.now().subtract(const Duration(days: 30)));
+      final Map<DateTime, List<Activity>> activities = await impact.getActivitiesFromDateRange(
+        start,
         lastDate,
       );
       final double restHR = await impact.getRestHRFromDay(lastDate);

@@ -322,18 +322,19 @@ class Impact {
       DateTime start, DateTime end) {
     List<Map<String, String>> weeks = [];
 
-    int daysRange = end.difference(start).inDays;
+    // Add one day to include the end date in the range
+    int daysRange = end.difference(start).inDays + 1;
     int completeWeeks = daysRange ~/ 7;
     int remainingDays = daysRange % 7;
 
     // complete weeks
-    for (int weeksToSubtract = 0;
-        weeksToSubtract < completeWeeks;
-        weeksToSubtract++) {
-      String formattedStart = DateFormat('yyyy-MM-dd')
-          .format(end.subtract(Duration(days: (weeksToSubtract + 1) * 7)));
-      String formattedEnd = DateFormat('yyyy-MM-dd')
-          .format(end.subtract(Duration(days: weeksToSubtract * 7)));
+    for (int week = 0; week < completeWeeks; week++) {
+      DateTime weekStart = start.add(Duration(days: week * 7));
+      DateTime weekEnd = weekStart.add(Duration(days: 6));
+
+      String formattedStart = DateFormat('yyyy-MM-dd').format(weekStart);
+      String formattedEnd = DateFormat('yyyy-MM-dd').format(weekEnd);
+
       weeks.add({
         'start': formattedStart,
         'end': formattedEnd,
@@ -342,10 +343,15 @@ class Impact {
 
     // remaining days
     if (remainingDays > 0) {
+      DateTime remainingStart = start.add(Duration(days: completeWeeks * 7));
+      DateTime remainingEnd = end;
+
+      String formattedStart = DateFormat('yyyy-MM-dd').format(remainingStart);
+      String formattedEnd = DateFormat('yyyy-MM-dd').format(remainingEnd);
+
       weeks.add({
-        'start': DateFormat('yyyy-MM-dd').format(start),
-        'end': DateFormat('yyyy-MM-dd')
-            .format(start.add(Duration(days: remainingDays))),
+        'start': formattedStart,
+        'end': formattedEnd,
       });
     }
 
