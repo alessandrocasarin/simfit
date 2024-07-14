@@ -207,17 +207,13 @@ class _TrainingState extends State<Training> {
     Map<DateTime, List<Activity>> activities = data['activities'];
     double restHR = data['restHR'];
 
+    int dfms = ((lastDate.difference(_userProvider.mesocycleStartDate!).inHours)/24).round()+1;
     Algorithm algorithm = Algorithm(
       gender: _userProvider.gender ?? 'male',
       age: _userProvider.age ?? 0,
       rHR: restHR,
       mesoLen: _userProvider.mesocycleLength ?? 42,
-      daysFromMesoStart: lastDate
-              .difference(_userProvider.mesocycleStartDate ??
-                  DateUtils.dateOnly(
-                      DateTime.now().subtract(const Duration(days: 30))))
-              .inDays +
-          1,
+      daysFromMesoStart: dfms,
     );
     Map<DateTime, Map<String, double>> mesocycleScores =
         algorithm.computeScoresOfMesocycle(lastDate, activities);
