@@ -99,7 +99,7 @@ class Algorithm {
     // Computing ACL (Acute Training Load) for new day
     double num = 0.0; // Initializing numerator for ACL calculation
     double den = 0.0; // Initializing denominator for ACL calculation
-    int limit = (daysFromStart < 7) ? daysFromStart : 7; // Determining limit for ACL calculation
+    int limit = (daysFromStart+1 < 7) ? daysFromStart+1 : 7; // Determining limit for ACL calculation
     for (var i = 0; i < limit; i++) {
       DateTime currentDay = newDay.subtract(Duration(days: i)); // Getting date for current day within ACL window
       num += (scores[currentDay]?['TRIMP'] ?? 0.0) * pow(e, -i / 7); // Accumulating numerator based on TRIMP and exponential decay
@@ -111,7 +111,7 @@ class Algorithm {
     // Computing CTL (Chronic Training Load) for new day
     num = 0.0; // Resetting numerator for CTL calculation
     den = 0.0; // Resetting denominator for CTL calculation
-    for (var i = 0; i < daysFromStart; i++) {
+    for (var i = 0; i < daysFromStart+1; i++) {
       DateTime currentDay = newDay.subtract(Duration(days: i)); // Getting date for current day within CTL window
       num += (scores[currentDay]?['TRIMP'] ?? 0.0) * pow(e, -i / mesocycleLength); // Accumulating numerator based on TRIMP and exponential decay
       den += pow(e, -i / mesocycleLength); // Accumulating denominator based on exponential decay
