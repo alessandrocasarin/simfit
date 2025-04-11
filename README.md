@@ -1,16 +1,18 @@
-# simfit
+![Screenshot](https://github.com/alessandrocasarin/simfit/blob/main/assets/simfit-logo.png)
+# SimFit App
 
-A new Flutter project.
+Source code of the SimFit App, developed collaboratively as part of the project for the Biomedical Wearable Technologies for Healthcare and Wellbeing course (2023-2024).
 
-## Getting Started
+## Developers team
+- Marco Semenzin
+- Selly Gazzola
+- Alessandro Casarin
 
-This project is a starting point for a Flutter application.
+## What is SimFit?
+SimFit is a mobile app developed using Flutter which helps you tracking and planning your trainings by performing activities simulations.
 
-A few resources to get you started if this is your first Flutter project:
+## Core Functionalities
+- Summary of daily health data from FitBit
+- Tracking and planning of trainings
+- Performance overview during the mesocycle
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
